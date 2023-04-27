@@ -23,8 +23,8 @@ export class OpenAIError extends Error {
   }
 }
 
-var reader_save: ReadableStreamDefaultReader<Uint8Array> | undefined;
-  
+global.Foo = false;
+
 export const OpenAIStream = async (
   model: OpenAIModel,
   systemPrompt: string,
@@ -33,14 +33,13 @@ export const OpenAIStream = async (
   messages: Message[],
 ) => {
   let basaran = true;
-  let stopped = false;
   if (systemPrompt == "abort") {
-    await reader_save?.cancel();
     global.Foo = true;
     console.log("aborted !!!!!!!!!!!!!!!!!!!!!!!!!=" + global.Foo)
-    stopped = true;
     return;
   }
+  global.Foo = false;
+
   let url = `${OPENAI_API_HOST}/v1/chat/completions`;
   if (basaran) {
     url = `${OPENAI_API_HOST}/v1/completions`;
@@ -191,6 +190,8 @@ export const OpenAIStream = async (
         return;
       },
       async start(controller) {
+        let stopped = false;
+
         let no_gen_count = 0;
         let gen_concat = "";
         const onParse = (event: ParsedEvent | ReconnectInterval) => {
@@ -256,8 +257,9 @@ export const OpenAIStream = async (
       for await (const chunk of res.body as any) {
         i += 1;
         if (stopped || global.Foo) {
-          console.log("aborted!!!!")
-          stopped = true;
+          console.log("aborted!!!!=" + stopped + ", " + global.Foo)
+          stopped = false;
+          global.Foo = false;
           controller.close();
           break;
         }
