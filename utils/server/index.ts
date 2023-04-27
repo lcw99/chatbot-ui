@@ -119,8 +119,9 @@ export const OpenAIStream = async (
     }
   }
 
-  // let reader = res.body?.getReader();
-  // let no_gen_count = 0;
+  /*
+  let reader = res.body?.getReader();
+  let no_gen_count = 0;
 
   let gen_concat = "";
   const stream2 = new ReadableStream({
@@ -182,7 +183,7 @@ export const OpenAIStream = async (
       // controller.close();
     }
   })
-
+*/
   const stream = new ReadableStream({
       cancel(reason) {
         console.log("canceled=" + reason);
@@ -207,7 +208,7 @@ export const OpenAIStream = async (
               const queue = encoder.encode(text);
               controller.enqueue(queue);
             } catch (e) {
-              controller.error(e);
+              controller.error("parse error=" + e);
             }
           }
         } else {
@@ -234,7 +235,7 @@ export const OpenAIStream = async (
               }
               // console.log("[" + text + "]=" + aborted);
               gen_concat += text;
-              if (gen_concat.indexOf("\nB") >= 0) {
+              if (gen_concat.indexOf("\nB") >= 0 || gen_concat.indexOf("\nA") >= 0) {
                   console.log("stopped stop word = " + gen_concat)
                   controller.close();
                   stopped = true;
@@ -254,7 +255,7 @@ export const OpenAIStream = async (
       let i = 0;
       for await (const chunk of res.body as any) {
         i += 1;
-        if (stopped || global.Foo || i > 100) {
+        if (stopped || global.Foo) {
           console.log("aborted!!!!")
           stopped = true;
           controller.close();
