@@ -119,8 +119,8 @@ export const OpenAIStream = async (
     }
   }
 
-  let reader = res.body?.getReader();
-  let no_gen_count = 0;
+  // let reader = res.body?.getReader();
+  // let no_gen_count = 0;
 
   let gen_concat = "";
   const stream2 = new ReadableStream({
@@ -266,5 +266,5 @@ export const OpenAIStream = async (
     },
   });
 
-  return stream2;
+  return stream;
 };
