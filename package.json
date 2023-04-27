@@ -29,6 +29,7 @@
     "rehype-mathjax": "^4.0.2",
     "remark-gfm": "^3.0.1",
     "remark-math": "^5.1.1",
+    "sessionstorage-for-nodejs": "^1.0.2",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

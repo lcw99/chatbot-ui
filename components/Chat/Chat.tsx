@@ -116,6 +116,8 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           });
         }
         const controller = new AbortController();
+        console.log(endpoint)
+        let data;
         const response = await fetch(endpoint, {
           method: 'POST',
           headers: {
@@ -130,7 +132,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           toast.error(response.statusText);
           return;
         }
-        const data = response.body;
+        data = response.body;
         if (!data) {
           homeDispatch({ field: 'loading', value: false });
           homeDispatch({ field: 'messageIsStreaming', value: false });
@@ -154,8 +156,20 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           let text = '';
           while (!done) {
             if (stopConversationRef.current === true) {
-              controller.abort();
               done = true;
+              global.Foo = true;
+              // controller.abort();
+              reader.cancel();
+              reader.releaseLock();
+              data.cancel("bbb");
+              body = JSON.stringify({model: "", messages: [], key: "", temperature: 0, prompt: "abort"});
+              const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body,
+              });
               break;
             }
             const { value, done: doneReading } = await reader.read();

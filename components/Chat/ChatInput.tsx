@@ -107,6 +107,7 @@ export const ChatInput = ({
   };
 
   const handleStopConversation = () => {
+    console.log("handleStopConversation!!!!!!")
     stopConversationRef.current = true;
     setTimeout(() => {
       stopConversationRef.current = false;
