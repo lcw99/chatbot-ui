@@ -39,7 +39,7 @@ export const OpenAIStream = async (
   if (OPENAI_API_TYPE === 'azure') {
     url = `${OPENAI_API_HOST}/openai/deployments/${AZURE_DEPLOYMENT_ID}/chat/completions?api-version=${OPENAI_API_VERSION}`;
   }
-  console.log(messages)
+  //console.log(messages)
   let prompt = "";
   for (const m of messages) {
     if (m.role === 'user') {
@@ -48,8 +48,8 @@ export const OpenAIStream = async (
       prompt += m.content + "\n";
     }
   }
-  console.log(prompt);
-  console.log("temperature=" + temperature);
+  //console.log(prompt);
+  //console.log("temperature=" + temperature);
   const res = await fetch(url, {
     headers: {
       'Content-Type': 'application/json',
@@ -141,7 +141,7 @@ export const OpenAIStream = async (
               let text = json.choices[0].text;
               if (text.length == 0) {
                 no_gen_count += 1;
-                console.log("no gen = " + no_gen_count)
+                // console.log("no gen = " + no_gen_count)
                 if (no_gen_count > 5) {
                   controller.close();
                   stopped = true;
