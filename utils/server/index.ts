@@ -23,7 +23,6 @@ export class OpenAIError extends Error {
   }
 }
 
-global.Foo = false;
 
 export const OpenAIStream = async (
   model: OpenAIModel,
@@ -33,12 +32,12 @@ export const OpenAIStream = async (
   messages: Message[],
 ) => {
   let basaran = true;
+  let aborted = false;
   if (systemPrompt == "abort") {
-    global.Foo = true;
-    console.log("aborted !!!!!!!!!!!!!!!!!!!!!!!!!=" + global.Foo)
+    aborted = true;
+    console.log("aborted !!!!!!!!!!!!!!!!!!!!!!!!!=" + aborted)
     return;
   }
-  global.Foo = false;
 
   let url = `${OPENAI_API_HOST}/v1/chat/completions`;
   if (basaran) {
@@ -126,7 +125,7 @@ export const OpenAIStream = async (
   const stream2 = new ReadableStream({
     cancel(reason) {
       console.log("canceled=" + reason);
-      global.Foo = true;
+      aborted = true;
       return;
     },
     async start(controller) {
@@ -186,7 +185,7 @@ export const OpenAIStream = async (
   const stream = new ReadableStream({
       cancel(reason) {
         console.log("canceled=" + reason);
-        global.Foo = true;
+        aborted = true;
         return;
       },
       async start(controller) {
@@ -213,7 +212,6 @@ export const OpenAIStream = async (
             }
           }
         } else {
-          const aborted = global.Foo;
           if (aborted) {
             controller.close();
             stopped = true;
@@ -256,10 +254,10 @@ export const OpenAIStream = async (
       let i = 0;
       for await (const chunk of res.body as any) {
         i += 1;
-        if (stopped || global.Foo) {
-          console.log("aborted!!!!=" + stopped + ", " + global.Foo)
+        if (stopped || aborted) {
+          console.log("aborted!!!!=" + stopped + ", " + aborted)
           stopped = false;
-          global.Foo = false;
+          aborted = false;
           controller.close();
           break;
         }
