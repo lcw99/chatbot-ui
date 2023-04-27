@@ -55,7 +55,7 @@ export const OpenAIStream = async (
       prompt += m.content + "\n";
     }
   }
-  //console.log(prompt);
+  console.log(prompt);
   //console.log("temperature=" + temperature);
 
   const res = await fetch(url, {
@@ -225,8 +225,8 @@ export const OpenAIStream = async (
               let text = json.choices[0].text;
               if (text.length == 0) {
                 no_gen_count += 1;
-                if (no_gen_count > 5) {
-                  console.log("stopped no gen = " + no_gen_count)
+                if (no_gen_count > 10) {
+                  console.log("stopped no gen = " + gen_concat)
                   controller.close();
                   stopped = true;
                 }

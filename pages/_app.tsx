@@ -6,6 +6,7 @@ import type { AppProps } from 'next/app';
 import { Inter } from 'next/font/google';
 
 import '@/styles/globals.css';
+import { Analytics } from '@vercel/analytics/react';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -14,6 +15,7 @@ function App({ Component, pageProps }: AppProps<{}>) {
 
   return (
     <div className={inter.className}>
+      <Analytics />
       <Toaster />
       <QueryClientProvider client={queryClient}>
         <Component {...pageProps} />
