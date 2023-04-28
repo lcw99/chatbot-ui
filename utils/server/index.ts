@@ -50,11 +50,16 @@ export const OpenAIStream = async (
   let prompt = "";
   for (const m of messages) {
     if (m.role === 'user') {
-      prompt += "B:" + m.content.trim() + "\nA:";
+      prompt += "B: " + m.content.trim() + "\nA: ";
     } else {
-      prompt += m.content + "\n";
+      prompt += m.content.trim() + "\n";
     }
   }
+  prompt = prompt.trim();
+  // let pp = prompt.split("B:")
+  // if (pp.length > 3) 
+  //   pp[pp.length - 2] = pp[pp.length - 2] + "<|endoftext|><|endoftext|><|endoftext|>";
+  // prompt = pp.join("B:");
   console.log(prompt);
   //console.log("temperature=" + temperature);
 
@@ -88,7 +93,7 @@ export const OpenAIStream = async (
       }),
       ...(basaran && {
         prompt: prompt,
-        max_tokens: 500,
+        max_tokens: 1000,
         temperature: temperature,
         top_p: 0.65,
         stream: true,
