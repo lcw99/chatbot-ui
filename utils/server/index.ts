@@ -93,7 +93,7 @@ export const OpenAIStream = async (
       }),
       ...(basaran && {
         prompt: prompt,
-        max_tokens: 1000,
+        max_tokens: 500,
         temperature: temperature,
         top_p: 0.65,
         stream: true,
