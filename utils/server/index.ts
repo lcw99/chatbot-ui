@@ -23,20 +23,22 @@ export class OpenAIError extends Error {
   }
 }
 
-
 export const OpenAIStream = async (
   model: OpenAIModel,
   systemPrompt: string,
   temperature : number,
   key: string,
   messages: Message[],
+  uuid: string,
 ) => {
+  console.log("OpenAIStream uuid = " + systemPrompt + "," + uuid);
   let basaran = true;
-  let aborted = false;
-  if (systemPrompt == "abort") {
-    aborted = true;
-    console.log("aborted !!!!!!!!!!!!!!!!!!!!!!!!!=" + aborted)
+  if (systemPrompt.startsWith("abort")) {
+    global.aborted.set(uuid, true); 
+    console.log("aborted !!!!!!!!!!!!!!!!!!!!!!!!!=" + [...global.aborted.keys()])
     return;
+  } else {
+    global.aborted = new Map();
   }
 
   let url = `${OPENAI_API_HOST}/v1/chat/completions`;
@@ -187,14 +189,14 @@ export const OpenAIStream = async (
     }
   })
 */
-  const stream = new ReadableStream({
-      cancel(reason) {
+let stopped = false;
+const stream = new ReadableStream({
+    cancel(reason) {
         console.log("canceled=" + reason);
-        aborted = true;
+        stopped = true;
         return;
       },
       async start(controller) {
-        let stopped = false;
 
         let no_gen_count = 0;
         let gen_concat = "";
@@ -217,8 +219,9 @@ export const OpenAIStream = async (
             }
           }
         } else {
-          if (aborted) {
+          if (global.aborted.has(uuid)) {
             controller.close();
+            console.log("stopped = global.aborted.has(uuid)");
             stopped = true;
             return;
           }
@@ -237,10 +240,9 @@ export const OpenAIStream = async (
                 }
                 return;
               }
-              // console.log("[" + text + "]=" + aborted);
               gen_concat += text;
               if (gen_concat.indexOf("\nB") >= 0 || gen_concat.indexOf("\nA") >= 0) {
-                  console.log("stopped stop word = " + gen_concat)
+                  console.log("stopped stop word = " + gen_concat + uuid)
                   controller.close();
                   stopped = true;
                   return;
@@ -259,10 +261,10 @@ export const OpenAIStream = async (
       let i = 0;
       for await (const chunk of res.body as any) {
         i += 1;
-        if (stopped || aborted) {
-          console.log("aborted!!!!=" + stopped + ", " + aborted)
+        if (stopped || global.aborted.has(uuid)) {
+          console.log("stopped or aborted = " + stopped + ", " + [...global.aborted.keys()])
           stopped = false;
-          aborted = false;
+          global.aborted.delete(uuid);
           controller.close();
           break;
         }

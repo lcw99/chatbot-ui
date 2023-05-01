@@ -33,6 +33,7 @@ import { ModelSelect } from './ModelSelect';
 import { SystemPrompt } from './SystemPrompt';
 import { TemperatureSlider } from './Temperature';
 import { MemoizedChatMessage } from './MemoizedChatMessage';
+import { v4 as uuidv4 } from 'uuid';
 
 interface Props {
   stopConversationRef: MutableRefObject<boolean>;
@@ -93,12 +94,15 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
         });
         homeDispatch({ field: 'loading', value: true });
         homeDispatch({ field: 'messageIsStreaming', value: true });
+        let uuid1 = uuidv4();
+        console.log("uuid=" + uuid1);
         const chatBody: ChatBody = {
           model: updatedConversation.model,
           messages: updatedConversation.messages,
           key: apiKey,
           prompt: updatedConversation.prompt,
           temperature: updatedConversation.temperature,
+          uuidx: uuid1,
         };
         const endpoint = getEndpoint(plugin);
         let body;
@@ -157,12 +161,12 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           while (!done) {
             if (stopConversationRef.current === true) {
               done = true;
-              global.Foo = true;
               // controller.abort();
               reader.cancel();
               reader.releaseLock();
               data.cancel("bbb");
-              body = JSON.stringify({model: "", messages: [], key: "", temperature: 0, prompt: "abort"});
+              console.log("aboort uuid=" + uuid1);
+              body = JSON.stringify({model: "", messages: [], key: "", temperature: 0, prompt: "abort", uuidx:uuid1});
               const response = await fetch(endpoint, {
                 method: 'POST',
                 headers: {
