@@ -40,7 +40,7 @@ export const OpenAIStream = async (
     console.log("aborted !!!!!!!!!!!!!!!!!!!!!!!!!=" + [...global.aborted.keys()])
     return;
   } 
-  
+
   let url = `${OPENAI_API_HOST}/v1/chat/completions`;
   if (basaran) {
     url = `${OPENAI_API_HOST}/v1/completions`;
@@ -200,6 +200,7 @@ const stream = new ReadableStream({
 
         let no_gen_count = 0;
         let gen_concat = "";
+        let temp_text = "";
         const onParse = (event: ParsedEvent | ReconnectInterval) => {
         if (!basaran) {
           if (event.type === 'event') {
@@ -241,15 +242,22 @@ const stream = new ReadableStream({
                 return;
               }
               gen_concat += text;
-              if (gen_concat.indexOf("\nB") >= 0 || gen_concat.indexOf("\nA") >= 0) {
-                  console.log("stopped stop word = " + gen_concat + uuid)
-                  controller.close();
-                  stopped = true;
-                  return;
-              }
+              temp_text += text;
               no_gen_count = 0;
-              const queue = encoder.encode(text);
-              controller.enqueue(queue);
+              if (temp_text.indexOf("\n") < 0) {
+                controller.enqueue(encoder.encode(temp_text));
+                temp_text = "";
+              } 
+              if (gen_concat.indexOf("\nB:") >= 0 || gen_concat.indexOf("\nA:") >= 0) {
+                console.log("stopped stop word = " + gen_concat)
+                controller.close();
+                stopped = true;
+                return;
+              }
+              if (temp_text.indexOf("\n") >= 0 && temp_text.length > 3) {
+                controller.enqueue(encoder.encode(temp_text));
+                temp_text = "";
+              }
             } catch (e) {
               controller.error(e);
             }
