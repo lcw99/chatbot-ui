@@ -23,6 +23,8 @@ export class OpenAIError extends Error {
   }
 }
 
+global.aborted = new Map();
+
 export const OpenAIStream = async (
   model: OpenAIModel,
   systemPrompt: string,
@@ -37,10 +39,8 @@ export const OpenAIStream = async (
     global.aborted.set(uuid, true); 
     console.log("aborted !!!!!!!!!!!!!!!!!!!!!!!!!=" + [...global.aborted.keys()])
     return;
-  } else {
-    global.aborted = new Map();
-  }
-
+  } 
+  
   let url = `${OPENAI_API_HOST}/v1/chat/completions`;
   if (basaran) {
     url = `${OPENAI_API_HOST}/v1/completions`;
