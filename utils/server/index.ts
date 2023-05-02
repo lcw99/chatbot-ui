@@ -254,6 +254,11 @@ const stream = new ReadableStream({
                 stopped = true;
                 return;
               }
+              if (temp_text.indexOf("\n") > 0) {
+                let s = temp_text.indexOf("\n");
+                controller.enqueue(encoder.encode(temp_text.slice(0, s)));
+                temp_text = temp_text.slice(s);
+              }
               if (temp_text.indexOf("\n") >= 0 && temp_text.length > 3) {
                 controller.enqueue(encoder.encode(temp_text));
                 temp_text = "";
