@@ -244,26 +244,27 @@ const stream = new ReadableStream({
               gen_concat += text;
               temp_text += text;
               no_gen_count = 0;
+              // console.log("temp_text=[" + temp_text + "]");
               if (temp_text.indexOf("\n") < 0) {
                 controller.enqueue(encoder.encode(temp_text));
                 temp_text = "";
               } 
               if (gen_concat.indexOf("\nB:") >= 0 || gen_concat.indexOf("\nA:") >= 0) {
-                console.log("stopped stop word = " + gen_concat)
+                console.log("stopped stop word =" + "\n" + text + "|\n" + temp_text + "|\n" + gen_concat)
                 controller.close();
                 stopped = true;
                 return;
               }
-              if (temp_text.indexOf("\n") > 0) {
+              if (temp_text.indexOf("\n") >= 0) {
                 let s = temp_text.indexOf("\n");
                 controller.enqueue(encoder.encode(temp_text.slice(0, s)));
                 temp_text = temp_text.slice(s);
               }
-              if (temp_text.indexOf("\n") >= 0 && temp_text.length > 3) {
+              if (temp_text.indexOf("\n") >= 0 && temp_text.length > 5) {
                 controller.enqueue(encoder.encode(temp_text));
                 temp_text = "";
               }
-            } catch (e) {
+          } catch (e) {
               controller.error(e);
             }
           } 
