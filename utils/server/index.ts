@@ -98,6 +98,7 @@ export const OpenAIStream = async (
         max_tokens: 1000,
         temperature: temperature,
         top_p: 0.9,
+        logprobs: 5,
         stream: true,
       }),
     }),
@@ -231,39 +232,75 @@ const stream = new ReadableStream({
 
             try {
               const json = JSON.parse(data);
-              let text = json.choices[0].text;
-              if (text.length == 0) {
-                no_gen_count += 1;
-                if (no_gen_count > 10) {
-                  console.log("stopped no gen = " + gen_concat)
-                  controller.close();
-                  stopped = true;
+              let text_old = json.choices[0].text;
+
+              json.choices.forEach((choice: any) => {
+                let graphemes = [...choice.text];
+
+                let logprobs = choice.logprobs;
+                if (choice.finish_reason !== null) {
+                    console.log("finished=" + choice.finish_reason);
                 }
-                return;
-              }
-              gen_concat += text;
-              temp_text += text;
-              no_gen_count = 0;
-              // console.log("temp_text=[" + temp_text + "]");
-              if (temp_text.indexOf("\n") < 0) {
-                controller.enqueue(encoder.encode(temp_text));
-                temp_text = "";
-              } 
-              if (gen_concat.indexOf("\nB:") >= 0 || gen_concat.indexOf("\nA:") >= 0) {
-                console.log("stopped stop word =" + "\n" + text + "|\n" + temp_text + "|\n" + gen_concat)
-                controller.close();
-                stopped = true;
-                return;
-              }
-              if (temp_text.indexOf("\n") >= 0) {
-                let s = temp_text.indexOf("\n");
-                controller.enqueue(encoder.encode(temp_text.slice(0, s)));
-                temp_text = temp_text.slice(s);
-              }
-              if (temp_text.indexOf("\n") >= 0 && temp_text.length > 5) {
-                controller.enqueue(encoder.encode(temp_text));
-                temp_text = "";
-              }
+                for (let i = 0; i < logprobs.tokens.length; i++) {
+                    let text = "";
+                    let start =
+                        logprobs.text_offset[i] - logprobs.text_offset[0];
+                    if (i + 1 < logprobs.tokens.length) {
+                        let end =
+                            logprobs.text_offset[i + 1] -
+                            logprobs.text_offset[0];
+                        text = graphemes.slice(start, end).join("");
+                    } else {
+                        text = graphemes.slice(start).join("");
+                    }
+
+                    let info = {
+                        token: logprobs.tokens[i],
+                        token_logprob: logprobs.token_logprobs[i],
+                        top_logprobs: logprobs.top_logprobs[i],
+                    };
+
+                    let prob = Math.exp(logprobs.token_logprobs[i]);
+
+                    if (text.length == 0) {
+                      no_gen_count += 1;
+                      if (no_gen_count > 10) {
+                        console.log("stopped no gen = " + gen_concat)
+                        controller.close();
+                        stopped = true;
+                      }
+                      return;
+                    }
+                    // if (text != text_old)
+                    //   console.log("diff=%s, %s", text, text_old);
+                    gen_concat += text;
+                    temp_text += text;
+                    no_gen_count = 0;
+                    // console.log("temp_text=[" + temp_text + "]");
+                    if (temp_text.indexOf("\n") < 0) {
+                      controller.enqueue(encoder.encode(temp_text));
+                      temp_text = "";
+                    } 
+                    if (gen_concat.indexOf("\nB:") >= 0 || gen_concat.indexOf("\nA:") >= 0) {
+                      console.log("stopped stop word =" + "\n" + text + "|\n" + temp_text + "|\n" + gen_concat)
+                      controller.close();
+                      stopped = true;
+                      return;
+                    }
+                    if (temp_text.indexOf("\n") >= 0) {
+                      let s = temp_text.indexOf("\n");
+                      controller.enqueue(encoder.encode(temp_text.slice(0, s)));
+                      temp_text = temp_text.slice(s);
+                    }
+                    if (temp_text.indexOf("\n") >= 0 && temp_text.length > 5) {
+                      controller.enqueue(encoder.encode(temp_text));
+                      temp_text = "";
+                    }
+    
+                  }                
+              });
+
+
           } catch (e) {
               controller.error(e);
             }
