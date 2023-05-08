@@ -312,7 +312,7 @@ const stream = new ReadableStream({
               gen_concat += text;
               temp_text += text;
               no_gen_count = 0;
-              console.log("temp_text=[%s] [%s]", text, temp_text);
+              console.log("text, temp_text=[%s] [%s]", text.replace("\n", "/"), temp_text.replace("\n", "/"));
               if (temp_text.indexOf("\n") < 0) {
                 controller.enqueue(encoder.encode(temp_text));
                 temp_text = "";
@@ -325,10 +325,13 @@ const stream = new ReadableStream({
               }
               if (temp_text.indexOf("\n") >= 0) {
                 let s = temp_text.indexOf("\n");
-                controller.enqueue(encoder.encode(temp_text.slice(0, s)));
-                temp_text = temp_text.slice(s);
+                if (s > 0) {
+                  controller.enqueue(encoder.encode(temp_text.slice(0, s)));
+                  temp_text = temp_text.slice(s);
+                }
               }
               if (temp_text.indexOf("\n") >= 0 && temp_text.length > 5) {
+                console.log("non stop temp_text=[%s]", temp_text.replace("\n", "/"));
                 controller.enqueue(encoder.encode(temp_text));
                 temp_text = "";
               }
