@@ -313,6 +313,9 @@ const stream = new ReadableStream({
               temp_text += text;
               no_gen_count = 0;
               console.log("text, temp_text=[%s] [%s]", text.replace("\n", "/"), temp_text.replace("\n", "/"));
+              let ttt = decoder.decode(encoder.encode(temp_text))
+              if (ttt != temp_text)
+                console.log("!!!! error")
               if (temp_text.indexOf("\n") < 0) {
                 controller.enqueue(encoder.encode(temp_text));
                 temp_text = "";
@@ -335,8 +338,6 @@ const stream = new ReadableStream({
                 controller.enqueue(encoder.encode(temp_text));
                 temp_text = "";
               }
-
-
           } catch (e) {
               controller.error(e);
             }
