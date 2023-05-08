@@ -97,7 +97,7 @@ export const OpenAIStream = async (
         prompt: prompt,
         max_tokens: 1000,
         temperature: temperature,
-        top_p: 0.9,
+        top_p: 0.95,
         // logprobs: 5,
         stream: true,
       }),
@@ -309,12 +309,10 @@ const stream = new ReadableStream({
                 }
                 return;
               }
-              // if (text != text_old)
-              //   console.log("diff=%s, %s", text, text_old);
               gen_concat += text;
               temp_text += text;
               no_gen_count = 0;
-              // console.log("temp_text=[" + temp_text + "]");
+              console.log("temp_text=[%s] [%s]", text, temp_text);
               if (temp_text.indexOf("\n") < 0) {
                 controller.enqueue(encoder.encode(temp_text));
                 temp_text = "";
