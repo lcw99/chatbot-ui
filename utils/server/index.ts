@@ -312,10 +312,7 @@ const stream = new ReadableStream({
               gen_concat += text;
               temp_text += text;
               no_gen_count = 0;
-              console.log("text, temp_text=[%s] [%s]", text.replace("\n", "/"), temp_text.replace("\n", "/"));
-              let ttt = decoder.decode(encoder.encode(temp_text))
-              if (ttt != temp_text)
-                console.log("!!!! error")
+              // console.log("text, temp_text=[%s] [%s]", text.replace("\n", "/"), temp_text.replace("\n", "/"));
               if (temp_text.indexOf("\n") < 0) {
                 controller.enqueue(encoder.encode(temp_text));
                 temp_text = "";
@@ -334,7 +331,7 @@ const stream = new ReadableStream({
                 }
               }
               if (temp_text.indexOf("\n") >= 0 && temp_text.length > 5) {
-                console.log("non stop temp_text=[%s]", temp_text.replace("\n", "/"));
+                // console.log("non stop temp_text=[%s]", temp_text.replace("\n", "/"));
                 controller.enqueue(encoder.encode(temp_text));
                 temp_text = "";
               }

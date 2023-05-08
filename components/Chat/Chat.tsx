@@ -180,7 +180,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
             done = doneReading;
             const chunkValue = decoder.decode(value, {stream:true});
             text += chunkValue;
-            console.log(text);
+            // console.log(text);
             if (isFirst) {
               isFirst = false;
               const updatedMessages: Message[] = [
