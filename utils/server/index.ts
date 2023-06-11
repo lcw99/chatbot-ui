@@ -34,7 +34,7 @@ export const OpenAIStream = async (
   uuid: string,
 ) => {
   console.log("OpenAIStream uuid = " + systemPrompt + "," + uuid);
-  let basaran = true;
+  let basaran = false;
   if (systemPrompt.startsWith("abort")) {
     global.aborted.set(uuid, true); 
     console.log("aborted !!!!!!!!!!!!!!!!!!!!!!!!!=" + [...global.aborted.keys()])
@@ -81,26 +81,27 @@ export const OpenAIStream = async (
     method: 'POST',
     body: JSON.stringify({
       ...(OPENAI_API_TYPE === 'openai' && {model: model.id}),
-      ...(basaran !== true && { 
+      ...(true && { 
         messages: [
           {
             role: 'system',
-            content: systemPrompt,
+            content: "",
           },
           ...messages,
         ],
         max_tokens: 1000,
         temperature: temperature,
-        stream: true,
-      }),
-      ...(basaran && {
-        prompt: prompt,
-        max_tokens: 1000,
-        temperature: temperature,
         top_p: 0.95,
-        // logprobs: 5,
         stream: true,
       }),
+      // ...(basaran && {
+      //   prompt: prompt,
+      //   max_tokens: 1000,
+      //   temperature: temperature,
+      //   top_p: 0.95,
+      //   // logprobs: 5,
+      //   stream: true,
+      // }),
     }),
   });
 
