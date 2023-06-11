@@ -89,9 +89,10 @@ export const OpenAIStream = async (
           },
           ...messages,
         ],
-        max_tokens: 1000,
+        max_tokens: 800,
         temperature: temperature,
-        top_p: 0.95,
+        top_p: 0.9,
+        stop: ["A:", "B:", "C:"],
         stream: true,
       }),
       // ...(basaran && {
@@ -205,6 +206,12 @@ const stream = new ReadableStream({
         let temp_text = "";
         const onParse = (event: ParsedEvent | ReconnectInterval) => {
         if (!basaran) {
+          if (global.aborted.has(uuid)) {
+            controller.close();
+            console.log("stopped = global.aborted.has(uuid)");
+            stopped = true;
+            return;
+          }
           if (event.type === 'event') {
             const data = event.data;
 
@@ -215,6 +222,7 @@ const stream = new ReadableStream({
                 return;
               }
               const text = json.choices[0].delta.content;
+              // console.log(text);
               const queue = encoder.encode(text);
               controller.enqueue(queue);
             } catch (e) {
