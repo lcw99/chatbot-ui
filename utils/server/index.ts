@@ -72,7 +72,7 @@ for (let i = messages.length - 1; i >= 0; i--) {
     const message = messages[i];
     const tokensLen = message.content.length / 2;
 
-    if (tokenCount + tokensLen + 1000 > 2000) {
+    if (tokenCount + tokensLen + 1000 > 1800) {
       break;
     }
     tokenCount += tokensLen;
@@ -104,7 +104,7 @@ for (let i = messages.length - 1; i >= 0; i--) {
           },
           ...messagesToSend,
         ],
-        max_tokens: 800,
+        max_tokens: 700,
         temperature: temperature,
         top_p: 1.0,
         stop: ["\nA:", "\nB:"],
