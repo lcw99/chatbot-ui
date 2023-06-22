@@ -65,6 +65,21 @@ export const OpenAIStream = async (
   console.log(prompt);
   //console.log("temperature=" + temperature);
 
+  let tokenCount = 0;
+  let messagesToSend: Message[] = [];
+
+for (let i = messages.length - 1; i >= 0; i--) {
+    const message = messages[i];
+    const tokensLen = message.content.length / 2;
+
+    if (tokenCount + tokensLen + 1000 > 2000) {
+      break;
+    }
+    tokenCount += tokensLen;
+    messagesToSend = [message, ...messagesToSend];
+  }
+  // console.log(messagesToSend);
+
   const res = await fetch(url, {
     headers: {
       'Content-Type': 'application/json',
@@ -87,7 +102,7 @@ export const OpenAIStream = async (
             role: 'system',
             content: "",
           },
-          ...messages,
+          ...messagesToSend,
         ],
         max_tokens: 800,
         temperature: temperature,
