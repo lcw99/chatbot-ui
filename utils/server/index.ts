@@ -110,6 +110,7 @@ export const OpenAIStream = async (
         top_p: 1.0,
         stop: ["\nA:", "\nB:"],
         stream: true,
+        user: uuid,
       }),
       // ...(basaran && {
       //   prompt: prompt,
