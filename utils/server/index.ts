@@ -49,30 +49,30 @@ export const OpenAIStream = async (
     url = `${OPENAI_API_HOST}/openai/deployments/${AZURE_DEPLOYMENT_ID}/chat/completions?api-version=${OPENAI_API_VERSION}`;
   }
   //console.log(messages)
-  let prompt = "";
-  for (const m of messages) {
-    if (m.role === 'user') {
-      prompt += "B: " + m.content.trim() + "\nA: ";
-    } else {
-      prompt += m.content.trim() + "\n";
-    }
-  }
-  prompt = prompt.trim();
+  // let prompt = "";
+  // for (const m of messages) {
+  //   if (m.role === 'user') {
+  //     prompt += "B: " + m.content.trim() + "\nA: ";
+  //   } else {
+  //     prompt += m.content.trim() + "\n";
+  //   }
+  // }
+  // prompt = prompt.trim();
   // let pp = prompt.split("B:")
   // if (pp.length > 3) 
   //   pp[pp.length - 2] = pp[pp.length - 2] + "<|endoftext|><|endoftext|><|endoftext|>";
   // prompt = pp.join("B:");
-  console.log(prompt);
+  // console.log(prompt);
   //console.log("temperature=" + temperature);
 
   let tokenCount = 0;
   let messagesToSend: Message[] = [];
 
-for (let i = messages.length - 1; i >= 0; i--) {
+  for (let i = messages.length - 1; i >= 0; i--) {
     const message = messages[i];
     const tokensLen = message.content.length / 2;
 
-    if (tokenCount + tokensLen + 1000 > 1800) {
+    if (tokenCount + tokensLen + 1000 > 1800 || messagesToSend.length > 4) {
       break;
     }
     tokenCount += tokensLen;
