@@ -78,7 +78,8 @@ export const OpenAIStream = async (
     tokenCount += tokensLen;
     messagesToSend = [message, ...messagesToSend];
   }
-  // console.log(messagesToSend);
+  console.log("messagesToSend.length= " + messagesToSend.length);
+  console.log("tokenCount= " + tokenCount);
 
   const res = await fetch(url, {
     headers: {
