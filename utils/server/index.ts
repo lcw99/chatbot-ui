@@ -1,6 +1,12 @@
 import { Message } from '@/types/chat';
 import { OpenAIModel } from '@/types/openai';
 
+// @ts-expect-error
+import wasm from '../../node_modules/@dqbd/tiktoken/lite/tiktoken_bg.wasm?module';
+
+import tiktokenModel from '@dqbd/tiktoken/encoders/cl100k_base.json';
+import { Tiktoken, init } from '@dqbd/tiktoken/lite/init';
+
 import { AZURE_DEPLOYMENT_ID, OPENAI_API_HOST, OPENAI_API_TYPE, OPENAI_API_VERSION, OPENAI_ORGANIZATION } from '../app/const';
 
 import {
@@ -24,6 +30,7 @@ export class OpenAIError extends Error {
 }
 
 global.aborted = new Map();
+
 
 export const OpenAIStream = async (
   model: OpenAIModel,
@@ -65,13 +72,21 @@ export const OpenAIStream = async (
   // console.log(prompt);
   //console.log("temperature=" + temperature);
 
+  await init((imports) => WebAssembly.instantiate(wasm, imports));
+  const encoding = new Tiktoken(
+    tiktokenModel.bpe_ranks,
+    tiktokenModel.special_tokens,
+    tiktokenModel.pat_str,
+  );
+
   let tokenCount = 0;
   let messagesToSend: Message[] = [];
 
   for (let i = messages.length - 1; i >= 0; i--) {
     const message = messages[i];
-    const tokensLen = message.content.length / 2;
-
+    const token = encoding.encode(message.content)
+    // const tokensLen = message.content.length / 2;
+    const tokensLen = token.length
     if (tokenCount + tokensLen + 1000 > 1800 || messagesToSend.length > 4) {
       break;
     }
