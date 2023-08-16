@@ -87,7 +87,7 @@ export const OpenAIStream = async (
     const token = encoding.encode(message.content)
     // const tokensLen = message.content.length / 2;
     const tokensLen = token.length
-    if (tokenCount + tokensLen + 1000 > 1800 || messagesToSend.length > 4) {
+    if (tokenCount + tokensLen + 1000 > 2000 || messagesToSend.length > 4) {
       break;
     }
     tokenCount += tokensLen;
