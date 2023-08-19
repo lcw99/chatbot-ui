@@ -428,7 +428,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
                     )}
                   </div>
                   <div className="flex h-full flex-col space-y-4 rounded-lg border border-neutral-200 p-4 dark:border-neutral-600">
-                  1. 사주GPT는 명리학 이론만 배운 상태예요. 아직 이용자 분들의 개인 운세나 사주 해설은 불가능합니다. 모든 분들이 쉽게 사주 해설을 받을 수 있도록 명리학, AI 전문가가 열심히 작업 중이니 조금만 기다려주세요!
+1. 사주GPT는 명리학 이론만 배운 상태예요. 아직 이용자 분들의 개인 운세나 사주 해설은 불가능합니다. 모든 분들이 쉽게 사주 해설을 받을 수 있도록 명리학, AI 전문가가 열심히 작업 중이니 조금만 기다려주세요!
 <br/><br/>
 2. 사주 관련 개념에 대해서 질문할 때엔 &quot;명리학&quot;이라는 명시를 해주시면 더 정확한 답을 얻을 수 있어요.
 ex. &quot;비겁&quot;의 경우 일상 용어 &quot;비겁하다&quot;로 인식되지 않도록 &quot;명리학에서의 비겁&quot;이라 표현해주는 것이 좋습니다.
