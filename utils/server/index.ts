@@ -116,7 +116,7 @@ export const OpenAIStream = async (
         messages: [
           {
             role: 'system',
-            content: "",
+            content: "사주 명리 전문가로서 답하라.",
           },
           ...messagesToSend,
         ],

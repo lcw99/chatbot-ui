@@ -94,7 +94,8 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
         });
         homeDispatch({ field: 'loading', value: true });
         homeDispatch({ field: 'messageIsStreaming', value: true });
-        let uuid1 = uuidv4();
+        // let uuid1 = uuidv4();
+        let uuid1 = selectedConversation.id;
         console.log("uuid=" + uuid1);
         const chatBody: ChatBody = {
           model: updatedConversation.model,
@@ -419,12 +420,20 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
               <>
                 <div className="mx-auto flex flex-col space-y-5 md:space-y-10 px-3 pt-5 md:pt-12 sm:max-w-[600px]">
                   <div className="text-center text-3xl font-semibold text-gray-800 dark:text-gray-100">
-                    {models.length === 0 ? (
+                    {false ? (
                       <div>
                       </div>
                     ) : (
-                      'Chatbot UI'
+                      'SajuGPT'
                     )}
+                  </div>
+                  <div className="flex h-full flex-col space-y-4 rounded-lg border border-neutral-200 p-4 dark:border-neutral-600">
+                  1. 사주GPT는 명리학 이론만 배운 상태예요. 아직 이용자 분들의 개인 운세나 사주 해설은 불가능합니다. 모든 분들이 쉽게 사주 해설을 받을 수 있도록 명리학, AI 전문가가 열심히 작업 중이니 조금만 기다려주세요!
+<br/><br/>
+2. 사주 관련 개념에 대해서 질문할 때엔 '명리학'이라는 명시를 해주시면 더 정확한 답을 얻을 수 있어요.
+ex. '비겁'의 경우 일상 용어 "비겁하다"로 인식되지 않도록 '명리학에서의 비겁'이라 표현해주는 것이 좋습니다.
+<br/><br/>
+3. 답변 속도가 느리거나, 원하시는 방향과 다른 답이 나온다면 '응답 재생성'을 눌러주세요.
                   </div>
 
                   {models.length > 0 && (

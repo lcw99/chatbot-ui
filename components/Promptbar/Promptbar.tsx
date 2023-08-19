@@ -144,6 +144,7 @@ const Promptbar = () => {
         handleCreateItem={handleCreatePrompt}
         handleCreateFolder={() => handleCreateFolder(t('New folder'), 'prompt')}
         handleDrop={handleDrop}
+        footerComponent={<div className='text-right'><a href="mailto:windy@stargio.co.kr">windy@stargio.co.kr</a><div>2023 © Stargio Soft Inc.</div></div>}
       />
     </PromptbarContext.Provider>
   );

@@ -1,12 +1,12 @@
 {
-  "New prompt": "New prompt",
-  "New folder": "New folder",
-  "No prompts.": "No prompts.",
-  "Search prompts...": "Search prompts...",
-  "Name": "Name",
-  "Description": "Description",
-  "A description for your prompt.": "A description for your prompt.",
-  "Prompt": "Prompt",
-  "Prompt content. Use {{}} to denote a variable. Ex: {{name}} is a {{adjective}} {{noun}}": "Prompt content. Use {{}} to denote a variable. Ex: {{name}} is a {{adjective}} {{noun}}",
-  "Save": "Save"
+  "New prompt": "새 프롬프터",
+  "New folder": "새 폴더",
+  "No prompts.": "프롬프터 없음.",
+  "Search prompts...": "프롬프터 검색...",
+  "Name": "이름",
+  "Description": "설명",
+  "A description for your prompt.": "프롬프터에 대한 설명을 입력 하세요.",
+  "Prompt": "프롬프터",
+  "Prompt content. Use {{}} to denote a variable. Ex: {{name}} is a {{adjective}} {{noun}}": "프롬프터 내용. {{}}를 사용해서 변수를 표시하세요. 예: {{name}} is a {{adjective}} {{noun}}",
+  "Save": "저장"
 }
