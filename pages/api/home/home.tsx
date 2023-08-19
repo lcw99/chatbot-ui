@@ -404,7 +404,8 @@ export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
       process.env.DEFAULT_MODEL) ||
     fallbackModelID;
 
-  let serverSidePluginKeysSet = false;
+  // let serverSidePluginKeysSet = false;
+  let serverSidePluginKeysSet = true;
 
   const googleApiKey = process.env.GOOGLE_API_KEY;
   const googleCSEId = process.env.GOOGLE_CSE_ID;
