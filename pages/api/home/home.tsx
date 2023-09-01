@@ -360,8 +360,8 @@ const Home = ({
       }}
     >
       <Head>
-        <title>SajuGPT</title>
-        <meta name="description" content="SajuGPT: 사주 전문가." />
+        <title>ChangGPT</title>
+        <meta name="description" content="ChangGPT: Korean LLM by Chang." />
         <meta
           name="viewport"
           content="height=device-height ,width=device-width, initial-scale=1, user-scalable=no"
