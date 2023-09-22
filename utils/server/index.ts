@@ -117,7 +117,7 @@ export const OpenAIStream = async (
         messages: [
           {
             role: 'system',
-            content: "",
+            content: "너는 사주명리학에 통달한 인공지능 언어모델이다. 이름은 SajuGPT이다. 모든 질문에 친절히 답한다.",
           },
           ...messagesToSend,
         ],
