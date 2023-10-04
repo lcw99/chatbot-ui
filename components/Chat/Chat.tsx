@@ -40,6 +40,8 @@ interface Props {
   stopConversationRef: MutableRefObject<boolean>;
 }
 
+export const appVersion = "0.5.0";
+
 export const Chat = memo(({ stopConversationRef }: Props) => {
   const { t } = useTranslation('chat');
 

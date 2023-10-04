@@ -19,6 +19,7 @@ import PromptbarContext from './PromptBar.context';
 import { PromptbarInitialState, initialState } from './Promptbar.state';
 
 import { v4 as uuidv4 } from 'uuid';
+import { appVersion } from '../Chat/Chat';
 
 const Promptbar = () => {
   const { t } = useTranslation('promptbar');
@@ -147,7 +148,7 @@ const Promptbar = () => {
         handleCreateItem={handleCreatePrompt}
         handleCreateFolder={() => handleCreateFolder(t('New folder'), 'prompt')}
         handleDrop={handleDrop}
-        footerComponent={<div className='text-right'><a href={emailLink}>{email}</a><div>2023 © {corp}</div></div>}
+        footerComponent={<div className='text-right'><div>{appVersion}</div><a href={emailLink}>{email}</a><div>2023 © {corp}</div></div>}
       />
     </PromptbarContext.Provider>
   );
