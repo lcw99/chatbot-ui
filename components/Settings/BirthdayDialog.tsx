@@ -10,7 +10,8 @@ import DateTimePicker from 'react-datetime-picker';
 import 'react-datetime-picker/dist/DateTimePicker.css';
 import 'react-calendar/dist/Calendar.css';
 import 'react-clock/dist/Clock.css';
-import { getBirthday, saveBirthday } from '@/utils/app/birthday';
+import { getSaju, saveSaju } from '@/utils/app/sajuinfo';
+import { Saju } from '@/types/saju';
 
 interface Props {
   open: boolean;
@@ -24,15 +25,17 @@ export const getDateTimeString = (d: Date, includeTime: boolean): string  => {
   return str;
 }
 
+
 export const BirthdayDialog: FC<Props> = ({ open, onClose }) => {
   const { t } = useTranslation('settings');
-  const birthday: Date = getBirthday();
-  const { state, dispatch } = useCreateReducer<Date>({
-    initialState: birthday,
+  const saju: Saju = getSaju();
+  const { state, dispatch } = useCreateReducer<Saju>({
+    initialState: saju,
   });
   const { dispatch: homeDispatch } = useContext(HomeContext);
   const modalRef = useRef<HTMLDivElement>(null);
 
+  // console.log(saju);
   useEffect(() => {
     const handleMouseDown = (e: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
@@ -52,27 +55,28 @@ export const BirthdayDialog: FC<Props> = ({ open, onClose }) => {
     };
   }, [onClose]);
 
-  var newBirthday: Date = new Date();
-  const today = getDateTimeString(newBirthday, false);
+  const today = getDateTimeString(new Date(), false);
   const handleSave = async () => {
-    const birthdayStr = getDateTimeString(newBirthday, true);
+    console.log("saju.birthday=" + saju.birthday + ", type=" + typeof(saju.birthday));
+    const birthdayStr = getDateTimeString(saju.birthday, true);
     const response = await fetch("https://fortune.stargio.co.kr:8445/stargioSaju/1.0.0/get.sajuText", {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ "birthday": birthdayStr, "today": today, "sex": "male" }),
+      body: JSON.stringify({ "birthday": birthdayStr, "today": today, "sex": state.sex }),
     });
-    var saju = "";
+    var sajuStr = "";
     if (response.ok) {
-      saju = JSON.parse(await response.text());
+      sajuStr = JSON.parse(await response.text());
     }
-    console.log(saju);
-    saveBirthday(newBirthday, saju);
+    saju.saju = sajuStr;
+    saju.sex = state.sex;
+    saveSaju(saju);
   };
 
   const onDateChange = (value: any) => {
-    newBirthday = value;
+    saju.birthday = value as Date;
   };
 
   // Render nothing if the dialog is not open.
@@ -104,8 +108,22 @@ export const BirthdayDialog: FC<Props> = ({ open, onClose }) => {
             </div>
 
             <div>
-              <DateTimePicker onChange={onDateChange} value={birthday} format="yyyy/MM/dd HH:mm" disableCalendar={true} disableClock={true}/>
+              <DateTimePicker onChange={onDateChange} value={saju.birthday} format="yyyy/MM/dd HH:mm" disableCalendar={true} disableClock={true}/>
             </div>
+
+            <select
+              className="w-full cursor-pointer bg-transparent p-2 text-neutral-700 dark:text-neutral-200"
+              value={state.sex}
+              onChange={(event) => {
+                  dispatch({ field: 'sex', value: event.target.value })
+                  saju.sex = state.sex;
+                  // console.log(state);
+                }
+              }
+            >
+              <option value="male">{t('male')}</option>
+              <option value="female">{t('female')}</option>
+            </select>
 
             <button
               type="button"

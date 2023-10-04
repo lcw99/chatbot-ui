@@ -1,4 +1,4 @@
-import { IconFileExport, IconSettings } from '@tabler/icons-react';
+import { IconFileExport, IconSettings, IconCake } from '@tabler/icons-react';
 import { useContext, useState } from 'react';
 
 import { useTranslation } from 'next-i18next';
@@ -54,7 +54,7 @@ export const ChatbarSettings = () => {
 
       <SidebarButton
         text={t('Birthday')}
-        icon={<IconSettings size={18} />}
+        icon={<IconCake size={18} />}
         onClick={() => setIsBirthdayDialog(true)}
       />
 

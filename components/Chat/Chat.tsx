@@ -34,7 +34,7 @@ import { SystemPrompt } from './SystemPrompt';
 import { TemperatureSlider } from './Temperature';
 import { MemoizedChatMessage } from './MemoizedChatMessage';
 import { v4 as uuidv4 } from 'uuid';
-import { getBirthday, saveBirthday, getSaju } from '@/utils/app/birthday';
+import { getSaju } from '@/utils/app/sajuinfo';
 
 interface Props {
   stopConversationRef: MutableRefObject<boolean>;
@@ -105,8 +105,8 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           prompt: updatedConversation.prompt,
           temperature: updatedConversation.temperature,
           uuidx: uuid1,
-          birtyday: getBirthday(),
-          saju: getSaju(),
+          birtyday: getSaju().birthday,
+          saju: getSaju().saju,
         };
         console.log(chatBody);
         const endpoint = getEndpoint(plugin);
@@ -171,7 +171,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
               reader.releaseLock();
               data.cancel("bbb");
               console.log("aboort uuid=" + uuid1);
-              body = JSON.stringify({model: "", messages: [], key: "", temperature: 0, prompt: "abort", uuidx:uuid1, birthday: getBirthday(), saju: ""});
+              body = JSON.stringify({model: "", messages: [], key: "", temperature: 0, prompt: "abort", uuidx:uuid1, birthday: getSaju().birthday, saju: ""});
               const response = await fetch(endpoint, {
                 method: 'POST',
                 headers: {
@@ -424,15 +424,9 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
               <>
                 <div className="mx-auto flex flex-col space-y-5 md:space-y-10 px-3 pt-5 md:pt-12 sm:max-w-[600px]">
                   <div className="text-center text-3xl font-semibold text-gray-800 dark:text-gray-100">
-                    {false ? (
-                      <div>
-                      </div>
-                    ) : (
-                      'ChangGPT'
-                    )}
+                    {process.env.NEXT_PUBLIC_TITLE}
                   </div>
-                  <div className="flex h-full flex-col space-y-4 rounded-lg border border-neutral-200 p-4 dark:border-neutral-600">
-                  ChangGPT is a large language model(LLM) based on Eleuther/polygolot-12.8B, which we finetuned to behave like ChatGPT.
+                  <div className="flex h-full flex-col space-y-4 rounded-lg border border-neutral-200 p-4 dark:border-neutral-600" dangerouslySetInnerHTML={{ __html: process.env.NEXT_PUBLIC_NOTICE ?? "" }}>
                   </div>
 
                   {models.length > 0 && (

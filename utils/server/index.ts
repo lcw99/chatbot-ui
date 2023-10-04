@@ -71,7 +71,7 @@ export const OpenAIStream = async (
 
   let systemMessage = "너는 사주명리에 통달한 인공지능 언어모델 SajuGPT이다. 모든 질문에 사주명리 전문가로서 성실히 답하라.";
   if (saju.length > 0)
-    systemMessage = "사주풀이\n" + saju + "\n모든 답변시 이 사주풀이를 참고 하고 질문의 답이 사주풀이에 없더라도 주어진 내용을 기반으로 적당히 추론하라.";
+    systemMessage = "사주풀이\n" + saju + "\n</s></s></s>모든 답변시 이 사주풀이를 참고 하고 질문의 답이 사주풀이에 없더라도 주어진 내용을 기반으로 적당히 추론하라.";
   let tokenCount = systemMessage.length / 2;
 
   console.log(messages);
