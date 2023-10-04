@@ -57,8 +57,15 @@ export const BirthdayDialog: FC<Props> = ({ open, onClose }) => {
 
   const today = getDateTimeString(new Date(), false);
   const handleSave = async () => {
-    console.log("saju.birthday=" + saju.birthday + ", type=" + typeof(saju.birthday));
+    // console.log("saju.birthday=" + saju.birthday + ", type=" + typeof(saju.birthday));
     const birthdayStr = getDateTimeString(saju.birthday, true);
+    if (saju.birthday.getFullYear() < 1800) {
+      saju.saju = "";
+      saju.sex = state.sex;
+      saveSaju(saju);
+      return;
+    }
+      
     const response = await fetch("https://fortune.stargio.co.kr:8445/stargioSaju/1.0.0/get.sajuText", {
       method: 'POST',
       headers: {
