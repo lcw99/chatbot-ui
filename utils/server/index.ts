@@ -15,8 +15,6 @@ import {
   createParser,
 } from 'eventsource-parser';
 
-import { getBirthday, saveBirthday } from '@/utils/app/birthday';
-
 export class OpenAIError extends Error {
   type: string;
   param: string;
@@ -74,20 +72,20 @@ export const OpenAIStream = async (
     systemMessage = "사주풀이\n" + saju + "\n</s></s></s>모든 답변시 이 사주풀이를 참고 하고 질문의 답이 사주풀이에 없더라도 주어진 내용을 기반으로 적당히 추론하라.";
   let tokenCount = systemMessage.length / 2;
 
-  console.log(messages);
   for (let i = messages.length - 1; i >= 0; i--) {
     const message = messages[i];
     const token = encoding.encode(message.content)
     // const tokensLen = message.content.length / 2;
     const tokensLen = token.length
     console.log("i=" + i + ", tokensLen=" + tokensLen);
-    if (tokenCount + tokensLen + 700 > 3900 || messagesToSend.length > 4) {
+    if (tokenCount + tokensLen + 700 > 3900 || messagesToSend.length > 6) {
       if (messagesToSend.length > 2)
         break;
     }
     tokenCount += tokensLen;
     messagesToSend = [message, ...messagesToSend];
   }
+  console.log(messagesToSend);
   console.log("messagesToSend.length= " + messagesToSend.length);
   console.log("tokenCount= " + tokenCount);
   // console.log("saju=" + saju);
