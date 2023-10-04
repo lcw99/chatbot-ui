@@ -4,22 +4,31 @@ import { useTranslation } from 'next-i18next';
 
 import { useCreateReducer } from '@/hooks/useCreateReducer';
 
-import { getSettings, saveSettings } from '@/utils/app/settings';
-
-import { Settings } from '@/types/settings';
-
 import HomeContext from '@/pages/api/home/home.context';
+
+import DateTimePicker from 'react-datetime-picker';
+import 'react-datetime-picker/dist/DateTimePicker.css';
+import 'react-calendar/dist/Calendar.css';
+import 'react-clock/dist/Clock.css';
+import { getBirthday, saveBirthday } from '@/utils/app/birthday';
 
 interface Props {
   open: boolean;
   onClose: () => void;
 }
 
-export const SettingDialog: FC<Props> = ({ open, onClose }) => {
+export const getDateTimeString = (d: Date, includeTime: boolean): string  => {
+  let str = d.getFullYear() + ("0"+(d.getMonth()+1)).slice(-2) + ("0" + d.getDate()).slice(-2);
+  if (includeTime)
+    str += ("0" + d.getHours()).slice(-2) + ("0" + d.getMinutes()).slice(-2);
+  return str;
+}
+
+export const BirthdayDialog: FC<Props> = ({ open, onClose }) => {
   const { t } = useTranslation('settings');
-  const settings: Settings = getSettings();
-  const { state, dispatch } = useCreateReducer<Settings>({
-    initialState: settings,
+  const birthday: Date = getBirthday();
+  const { state, dispatch } = useCreateReducer<Date>({
+    initialState: birthday,
   });
   const { dispatch: homeDispatch } = useContext(HomeContext);
   const modalRef = useRef<HTMLDivElement>(null);
@@ -43,9 +52,27 @@ export const SettingDialog: FC<Props> = ({ open, onClose }) => {
     };
   }, [onClose]);
 
-  const handleSave = () => {
-    homeDispatch({ field: 'lightMode', value: state.theme });
-    saveSettings(state);
+  var newBirthday: Date = new Date();
+  const today = getDateTimeString(newBirthday, false);
+  const handleSave = async () => {
+    const birthdayStr = getDateTimeString(newBirthday, true);
+    const response = await fetch("https://fortune.stargio.co.kr:8445/stargioSaju/1.0.0/get.sajuText", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ "birthday": birthdayStr, "today": today, "sex": "male" }),
+    });
+    var saju = "";
+    if (response.ok) {
+      saju = JSON.parse(await response.text());
+    }
+    console.log(saju);
+    saveBirthday(newBirthday, saju);
+  };
+
+  const onDateChange = (value: any) => {
+    newBirthday = value;
   };
 
   // Render nothing if the dialog is not open.
@@ -73,19 +100,12 @@ export const SettingDialog: FC<Props> = ({ open, onClose }) => {
             </div>
 
             <div className="text-sm font-bold mb-2 text-black dark:text-neutral-200">
-              {t('Theme')}
+              {"생년월일시"}
             </div>
 
-            <select
-              className="w-full cursor-pointer bg-transparent p-2 text-neutral-700 dark:text-neutral-200"
-              value={state.theme}
-              onChange={(event) =>
-                dispatch({ field: 'theme', value: event.target.value })
-              }
-            >
-              <option value="dark">{t('Dark mode')}</option>
-              <option value="light">{t('Light mode')}</option>
-            </select>
+            <div>
+              <DateTimePicker onChange={onDateChange} value={birthday} format="yyyy/MM/dd HH:mm" disableCalendar={true} disableClock={true}/>
+            </div>
 
             <button
               type="button"

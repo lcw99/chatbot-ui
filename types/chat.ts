@@ -14,6 +14,8 @@ export interface ChatBody {
   prompt: string;
   temperature: number;
   uuidx: string;
+  birtyday: Date;
+  saju: string;
 }
 
 export interface Conversation {

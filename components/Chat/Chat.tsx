@@ -34,6 +34,7 @@ import { SystemPrompt } from './SystemPrompt';
 import { TemperatureSlider } from './Temperature';
 import { MemoizedChatMessage } from './MemoizedChatMessage';
 import { v4 as uuidv4 } from 'uuid';
+import { getBirthday, saveBirthday, getSaju } from '@/utils/app/birthday';
 
 interface Props {
   stopConversationRef: MutableRefObject<boolean>;
@@ -104,7 +105,10 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           prompt: updatedConversation.prompt,
           temperature: updatedConversation.temperature,
           uuidx: uuid1,
+          birtyday: getBirthday(),
+          saju: getSaju(),
         };
+        console.log(chatBody);
         const endpoint = getEndpoint(plugin);
         let body;
         if (!plugin) {
@@ -167,7 +171,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
               reader.releaseLock();
               data.cancel("bbb");
               console.log("aboort uuid=" + uuid1);
-              body = JSON.stringify({model: "", messages: [], key: "", temperature: 0, prompt: "abort", uuidx:uuid1});
+              body = JSON.stringify({model: "", messages: [], key: "", temperature: 0, prompt: "abort", uuidx:uuid1, birthday: getBirthday(), saju: ""});
               const response = await fetch(endpoint, {
                 method: 'POST',
                 headers: {

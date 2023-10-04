@@ -116,6 +116,9 @@ const Promptbar = () => {
     }
   }, [searchTerm, prompts]);
 
+  let email = process.env.NEXT_PUBLIC_EMAIL ?? "windy@stargio.co.kr";
+  let corp = process.env.NEXT_PUBLIC_CORP ?? "Stargio Soft Inc.";
+  let emailLink = "mailto:" + email;
   return (
     <PromptbarContext.Provider
       value={{
@@ -144,7 +147,7 @@ const Promptbar = () => {
         handleCreateItem={handleCreatePrompt}
         handleCreateFolder={() => handleCreateFolder(t('New folder'), 'prompt')}
         handleDrop={handleDrop}
-        footerComponent={<div className='text-right'><a href="mailto:lcw@semaphore.kr">lcw@semaphore.kr</a><div>2023 © Semaphore Solutions Inc.</div></div>}
+        footerComponent={<div className='text-right'><a href={emailLink}>{email}</a><div>2023 © {corp}</div></div>}
       />
     </PromptbarContext.Provider>
   );

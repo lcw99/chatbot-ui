@@ -18,4 +18,5 @@ export interface LocalStorage {
   showPromptbar: boolean;
   // added plugin keys (4/3/23)
   pluginKeys: PluginKey[];
+  birthday: string;
 }

@@ -6,6 +6,7 @@ import { useTranslation } from 'next-i18next';
 import HomeContext from '@/pages/api/home/home.context';
 
 import { SettingDialog } from '@/components/Settings/SettingDialog';
+import { BirthdayDialog } from '@/components/Settings/BirthdayDialog';
 
 import { Import } from '../../Settings/Import';
 import { Key } from '../../Settings/Key';
@@ -17,6 +18,7 @@ import { PluginKeys } from './PluginKeys';
 export const ChatbarSettings = () => {
   const { t } = useTranslation('sidebar');
   const [isSettingDialogOpen, setIsSettingDialog] = useState<boolean>(false);
+  const [isBirthdayDialogOpen, setIsBirthdayDialog] = useState<boolean>(false);
 
   const {
     state: {
@@ -51,6 +53,12 @@ export const ChatbarSettings = () => {
       />
 
       <SidebarButton
+        text={t('Birthday')}
+        icon={<IconSettings size={18} />}
+        onClick={() => setIsBirthdayDialog(true)}
+      />
+
+      <SidebarButton
         text={t('Settings')}
         icon={<IconSettings size={18} />}
         onClick={() => setIsSettingDialog(true)}
@@ -61,6 +69,13 @@ export const ChatbarSettings = () => {
       ) : null}
 
       {!serverSidePluginKeysSet ? <PluginKeys /> : null}
+
+      <BirthdayDialog
+        open={isBirthdayDialogOpen}
+        onClose={() => {
+          setIsBirthdayDialog(false);
+        }}
+      />
 
       <SettingDialog
         open={isSettingDialogOpen}
