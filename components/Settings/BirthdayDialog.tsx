@@ -56,10 +56,11 @@ export const BirthdayDialog: FC<Props> = ({ open, onClose }) => {
   }, [onClose]);
 
   const today = getDateTimeString(new Date(), false);
+  var sajuCanceled = false;
   const handleSave = async () => {
     // console.log("saju.birthday=" + saju.birthday + ", type=" + typeof(saju.birthday));
     const birthdayStr = getDateTimeString(saju.birthday, true);
-    if (saju.birthday.getFullYear() < 1900) {
+    if (saju.birthday.getFullYear() < 1900 || sajuCanceled) {
       saju.saju = "";
       saju.sex = state.sex;
       saveSaju(saju);
@@ -88,6 +89,11 @@ export const BirthdayDialog: FC<Props> = ({ open, onClose }) => {
     saju.birthday = value as Date;
   };
 
+  const onCheckChange = (value: any) => {
+    console.log(value);
+    sajuCanceled = value;
+  };
+  
   // Render nothing if the dialog is not open.
   if (!open) {
     return <></>;
@@ -105,7 +111,7 @@ export const BirthdayDialog: FC<Props> = ({ open, onClose }) => {
 
           <div
             ref={modalRef}
-            className="dark:border-netural-400 inline-block max-h-[400px] transform overflow-y-auto rounded-lg border border-gray-300 bg-white px-4 pt-5 pb-4 text-left align-bottom shadow-xl transition-all dark:bg-[#202123] sm:my-8 sm:max-h-[600px] sm:w-full sm:max-w-lg sm:p-6 sm:align-middle"
+            className="dark:border-netural-400 inline-block sm:max-w-[400px] max-h-[400px] transform overflow-y-auto rounded-lg border border-gray-300 bg-white px-4 pt-5 pb-4 text-left align-bottom shadow-xl transition-all dark:bg-[#202123] sm:my-8 sm:max-h-[600px] sm:w-full sm:max-w-lg sm:p-6 sm:align-middle"
             role="dialog"
           >
             <div className="text-lg pb-4 font-bold text-black dark:text-neutral-200">
@@ -116,12 +122,12 @@ export const BirthdayDialog: FC<Props> = ({ open, onClose }) => {
               {"생년월일시"}
             </div>
 
-            <div>
+            <div className='text-lg'>
               <DateTimePicker onChange={onDateChange} value={saju.birthday} format="yyyy/MM/dd HH:mm" disableCalendar={true} disableClock={true}/>
             </div>
 
             <select
-              className="w-full cursor-pointer bg-transparent p-2 text-neutral-700 dark:text-neutral-200"
+              className="w-full cursor-pointer bg-transparent p-2 text-lg dark:text-lg"
               value={state.sex}
               onChange={(event) => {
                   dispatch({ field: 'sex', value: event.target.value })
@@ -130,10 +136,16 @@ export const BirthdayDialog: FC<Props> = ({ open, onClose }) => {
                 }
               }
             >
-              <option value="male">{t('male')}</option>
-              <option value="female">{t('female')}</option>
+              <option value="male">{t('Male')}</option>
+              <option value="female">{t('Female')}</option>
             </select>
-
+            <label className='text-lg'>
+              <input
+                type="checkbox"
+                onChange={(event) => onCheckChange(event.target.checked)}
+              />
+              &nbsp; {t('Cancel Saju')}
+            </label>
             <button
               type="button"
               className="w-full px-4 py-2 mt-6 border rounded-lg shadow border-neutral-500 text-neutral-900 hover:bg-neutral-100 focus:outline-none dark:border-neutral-800 dark:border-opacity-50 dark:bg-white dark:text-black dark:hover:bg-neutral-300"
