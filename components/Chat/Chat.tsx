@@ -34,7 +34,7 @@ import { SystemPrompt } from './SystemPrompt';
 import { TemperatureSlider } from './Temperature';
 import { MemoizedChatMessage } from './MemoizedChatMessage';
 import { v4 as uuidv4 } from 'uuid';
-import { getSaju } from '@/utils/app/sajuinfo';
+import { getSaju, refreshSaju } from '@/utils/app/sajuinfo';
 
 interface Props {
   stopConversationRef: MutableRefObject<boolean>;
@@ -70,11 +70,11 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const saju = getSaju();
-
+  var saju = getSaju();
   const handleSend = useCallback(
     async (message: Message, deleteCount = 0, plugin: Plugin | null = null) => {
       if (selectedConversation) {
+        saju = await refreshSaju();
         let updatedConversation: Conversation;
         if (deleteCount) {
           const updatedMessages = [...selectedConversation.messages];

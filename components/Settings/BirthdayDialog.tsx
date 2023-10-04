@@ -10,19 +10,12 @@ import DateTimePicker from 'react-datetime-picker';
 import 'react-datetime-picker/dist/DateTimePicker.css';
 import 'react-calendar/dist/Calendar.css';
 import 'react-clock/dist/Clock.css';
-import { getSaju, saveSaju } from '@/utils/app/sajuinfo';
+import { fetchSaju, getSaju, saveSaju, getDateTimeString } from '@/utils/app/sajuinfo';
 import { Saju } from '@/types/saju';
 
 interface Props {
   open: boolean;
   onClose: () => void;
-}
-
-export const getDateTimeString = (d: Date, includeTime: boolean): string  => {
-  let str = d.getFullYear() + ("0"+(d.getMonth()+1)).slice(-2) + ("0" + d.getDate()).slice(-2);
-  if (includeTime)
-    str += ("0" + d.getHours()).slice(-2) + ("0" + d.getMinutes()).slice(-2);
-  return str;
 }
 
 
@@ -54,35 +47,24 @@ export const BirthdayDialog: FC<Props> = ({ open, onClose }) => {
     };
   }, [onClose]);
 
-  const today = getDateTimeString(new Date(), false);
   var sajuCanceled = false;
   const handleSave = async () => {
     // console.log("saju.birthday=" + saju.birthday + ", type=" + typeof(saju.birthday));
-    const birthdayStr = getDateTimeString(state.birthday, true);
     if (saju.birthday.getFullYear() < 1900 || sajuCanceled) {
       saju.saju = "";
       saju.sex = state.sex;
       saveSaju(saju);
-      homeDispatch({ field: 'temperature', value: 0.7 });
+      homeDispatch({ field: 'refresh', value: true }); // just home refresh
       return;
     }
       
-    const response = await fetch("https://fortune.stargio.co.kr:8445/stargioSaju/1.0.0/get.sajuText", {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ "birthday": birthdayStr, "today": today, "sex": state.sex }),
-    });
-    var sajuStr = "";
-    if (response.ok) {
-      sajuStr = JSON.parse(await response.text());
-    }
+    const sajuStr = await fetchSaju(state.birthday, new Date(), state.sex);
+
     saju.birthday = state.birthday;
     saju.saju = sajuStr;
     saju.sex = state.sex;
     saveSaju(saju);
-    homeDispatch({ field: 'temperature', value: 0.7 });
+    homeDispatch({ field: 'refresh', value: true }); // just home refresh
   };
 
   const onDateChange = (value: any) => {
