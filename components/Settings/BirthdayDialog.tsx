@@ -86,6 +86,7 @@ export const BirthdayDialog: FC<Props> = ({ open, onClose }) => {
   };
 
   const onDateChange = (value: any) => {
+    dispatch({ field: 'birthday', value: value })
     saju.birthday = value as Date;
   };
 
@@ -123,7 +124,7 @@ export const BirthdayDialog: FC<Props> = ({ open, onClose }) => {
             </div>
 
             <div className='text-lg'>
-              <DateTimePicker onChange={onDateChange} value={saju.birthday} format="yyyy/MM/dd HH:mm" disableCalendar={true} disableClock={true}/>
+              <DateTimePicker onChange={onDateChange} value={state.birthday} format="yyyy/MM/dd HH:mm" disableCalendar={true} disableClock={true}/>
             </div>
 
             <select
