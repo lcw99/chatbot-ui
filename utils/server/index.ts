@@ -71,7 +71,7 @@ export const OpenAIStream = async (
   if (saju.length > 0) {
     const d = new Date();
     const today = "* 오늘은 " + d.getFullYear() + "년 " + (d.getMonth()+1) + "월 " + d.getDate() + "일 이다.\n";
-    systemMessage = "## 사주풀이\n" + today + saju + "\n</s></s></s>모든 답변시 이 사주풀이를 참고 하고 질문의 답이 사주풀이에 없더라도 주어진 내용을 기반으로 적당히 추론하라.";
+    systemMessage = "## 사주풀이\n" + today + saju + "\n</s></s></s>모든 답변시 이 사주풀이를 참고 하고 질문의 답이 사주풀이에 없더라도 주어진 내용을 기반으로 적당히 추론하라. 질문하는 사람이 사주풀이의 주인공이므로 당신이라고 칭하면 된다.";
   }
   let tokenCount = systemMessage.length / 2;
 
