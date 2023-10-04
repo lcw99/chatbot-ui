@@ -35,7 +35,6 @@ export const BirthdayDialog: FC<Props> = ({ open, onClose }) => {
   const { dispatch: homeDispatch } = useContext(HomeContext);
   const modalRef = useRef<HTMLDivElement>(null);
 
-  // console.log(saju);
   useEffect(() => {
     const handleMouseDown = (e: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
@@ -59,7 +58,7 @@ export const BirthdayDialog: FC<Props> = ({ open, onClose }) => {
   var sajuCanceled = false;
   const handleSave = async () => {
     // console.log("saju.birthday=" + saju.birthday + ", type=" + typeof(saju.birthday));
-    const birthdayStr = getDateTimeString(saju.birthday, true);
+    const birthdayStr = getDateTimeString(state.birthday, true);
     if (saju.birthday.getFullYear() < 1900 || sajuCanceled) {
       saju.saju = "";
       saju.sex = state.sex;
@@ -79,6 +78,7 @@ export const BirthdayDialog: FC<Props> = ({ open, onClose }) => {
     if (response.ok) {
       sajuStr = JSON.parse(await response.text());
     }
+    saju.birthday = state.birthday;
     saju.saju = sajuStr;
     saju.sex = state.sex;
     saveSaju(saju);
@@ -91,7 +91,6 @@ export const BirthdayDialog: FC<Props> = ({ open, onClose }) => {
   };
 
   const onCheckChange = (value: any) => {
-    console.log(value);
     sajuCanceled = value;
   };
   
@@ -133,7 +132,6 @@ export const BirthdayDialog: FC<Props> = ({ open, onClose }) => {
               onChange={(event) => {
                   dispatch({ field: 'sex', value: event.target.value })
                   saju.sex = state.sex;
-                  // console.log(state);
                 }
               }
             >

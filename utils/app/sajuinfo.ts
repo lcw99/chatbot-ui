@@ -19,6 +19,7 @@ export const getSaju = (): Saju => {
 };
 
 export const saveSaju = (saju: Saju) => {
+  console.log("saju----" + saju.birthday);
   console.log(saju);
   localStorage.setItem(STORAGE_KEY_SAJU, JSON.stringify(saju));
 };
