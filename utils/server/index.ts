@@ -161,89 +161,31 @@ const stream = new ReadableStream({
       },
       async start(controller) {
 
-        let no_gen_count = 0;
-        let gen_concat = "";
-        let temp_text = "";
         const onParse = (event: ParsedEvent | ReconnectInterval) => {
-        if (!basaran) {
-          if (global.aborted.has(uuid)) {
-            controller.close();
-            console.log("stopped = global.aborted.has(uuid)");
-            stopped = true;
-            return;
-          }
-          if (event.type === 'event') {
-            const data = event.data;
+        if (global.aborted.has(uuid)) {
+          controller.close();
+          console.log("stopped = global.aborted.has(uuid)");
+          stopped = true;
+          return;
+        }
+        if (event.type === 'event') {
+          const data = event.data;
 
-            try {
-              const json = JSON.parse(data);
-              if (json.choices[0].finish_reason != null) {
-                controller.close();
-                return;
-              }
-              const text = json.choices[0].delta.content;
-              // console.log(json);
-              if (typeof text !== 'undefined') {
-                const queue = encoder.encode(text);
-                controller.enqueue(queue);
-              }
-            } catch (e) {
-              controller.error("parse error=" + e);
+          try {
+            const json = JSON.parse(data);
+            const text = json.choices[0].delta.content;
+            // console.log(json);
+            if (typeof text !== 'undefined') {
+              const queue = encoder.encode(text);
+              controller.enqueue(queue);
             }
-          }
-        } else {
-          if (global.aborted.has(uuid)) {
-            controller.close();
-            console.log("stopped = global.aborted.has(uuid)");
-            stopped = true;
-            return;
-          }
-          if (event.type === 'event') {
-            const data = event.data;
-
-            try {
-              const json = JSON.parse(data);
-              let text = json.choices[0].text;
-
-              if (text.length == 0) {
-                no_gen_count += 1;
-                if (no_gen_count > 10) {
-                  console.log("stopped no gen = " + gen_concat)
-                  controller.close();
-                  stopped = true;
-                }
-                return;
-              }
-              gen_concat += text;
-              temp_text += text;
-              no_gen_count = 0;
-              // console.log("text, temp_text=[%s] [%s]", text.replace("\n", "/"), temp_text.replace("\n", "/"));
-              if (temp_text.indexOf("\n") < 0) {
-                controller.enqueue(encoder.encode(temp_text));
-                temp_text = "";
-              } 
-              if (gen_concat.indexOf("\nB:") >= 0 || gen_concat.indexOf("\nA:") >= 0) {
-                console.log("stopped stop word =" + "\n" + text + "|\n" + temp_text + "|\n" + gen_concat)
-                controller.close();
-                stopped = true;
-                return;
-              }
-              if (temp_text.indexOf("\n") >= 0) {
-                let s = temp_text.indexOf("\n");
-                if (s > 0) {
-                  controller.enqueue(encoder.encode(temp_text.slice(0, s)));
-                  temp_text = temp_text.slice(s);
-                }
-              }
-              if (temp_text.indexOf("\n") >= 0 && temp_text.length > 5) {
-                // console.log("non stop temp_text=[%s]", temp_text.replace("\n", "/"));
-                controller.enqueue(encoder.encode(temp_text));
-                temp_text = "";
-              }
+            if (json.choices[0].finish_reason != null) {
+              controller.close();
+              return;
+            }
           } catch (e) {
-              controller.error(e);
-            }
-          } 
+            controller.error("parse error=" + e);
+          }
         }
       };
 
