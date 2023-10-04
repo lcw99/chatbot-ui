@@ -70,6 +70,8 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  const saju = getSaju();
+
   const handleSend = useCallback(
     async (message: Message, deleteCount = 0, plugin: Plugin | null = null) => {
       if (selectedConversation) {
@@ -105,8 +107,8 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           prompt: updatedConversation.prompt,
           temperature: updatedConversation.temperature,
           uuidx: uuid1,
-          birtyday: getSaju().birthday,
-          saju: getSaju().saju,
+          birtyday: saju.birthday,
+          saju: saju.saju,
         };
         console.log(chatBody);
         const endpoint = getEndpoint(plugin);
@@ -448,14 +450,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
             ) : (
               <>
                 <div className="sticky top-0 z-10 flex justify-center border border-b-neutral-300 bg-neutral-100 py-2 text-sm text-neutral-500 dark:border-none dark:bg-[#444654] dark:text-neutral-200">
-                  {t('Temp')}
-                  : {selectedConversation?.temperature} |
-                  <button
-                    className="ml-2 cursor-pointer hover:opacity-50"
-                    onClick={handleSettings}
-                  >
-                    <IconSettings size={18} />
-                  </button>
+                  {saju.saju != "" ? t('Saju') : ""}
                   <button
                     className="ml-2 cursor-pointer hover:opacity-50"
                     onClick={onClearAll}

@@ -63,6 +63,7 @@ export const BirthdayDialog: FC<Props> = ({ open, onClose }) => {
       saju.saju = "";
       saju.sex = state.sex;
       saveSaju(saju);
+      homeDispatch({ field: 'temperature', value: 0.7 });
       return;
     }
       
@@ -80,6 +81,7 @@ export const BirthdayDialog: FC<Props> = ({ open, onClose }) => {
     saju.saju = sajuStr;
     saju.sex = state.sex;
     saveSaju(saju);
+    homeDispatch({ field: 'temperature', value: 0.7 });
   };
 
   const onDateChange = (value: any) => {
