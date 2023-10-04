@@ -59,7 +59,7 @@ export const BirthdayDialog: FC<Props> = ({ open, onClose }) => {
   const handleSave = async () => {
     // console.log("saju.birthday=" + saju.birthday + ", type=" + typeof(saju.birthday));
     const birthdayStr = getDateTimeString(saju.birthday, true);
-    if (saju.birthday.getFullYear() < 1800) {
+    if (saju.birthday.getFullYear() < 1900) {
       saju.saju = "";
       saju.sex = state.sex;
       saveSaju(saju);
