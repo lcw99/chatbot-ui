@@ -101,7 +101,7 @@ export const BirthdayDialog: FC<Props> = ({ open, onClose }) => {
             </div>
 
             <div className="text-sm font-bold mb-2 text-black dark:text-neutral-200">
-              {"생년월일시"}
+              {t('Birthday')}
             </div>
 
             <div className='text-lg'>
