@@ -115,7 +115,10 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
         const inputText = chatBody.messages.slice(-1)[0]['content'] 
         console.log(inputText);
         if (saju.saju == "" && inputText.includes('년') && inputText.includes('월') && inputText.includes('일')) {
-          alert(t('사주를 보시려면 좌측 하단의 생년월일시 메뉴에서 생시를 입력 하세요.'));
+          alert(t("Try birthday menu left below."));
+          // homeDispatch({ field: 'loading', value: false });
+          // homeDispatch({ field: 'messageIsStreaming', value: false });
+          // return;
         }
         const endpoint = getEndpoint(plugin);
         let body;
