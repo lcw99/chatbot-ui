@@ -104,12 +104,12 @@ export const BirthdayDialog: FC<Props> = ({ open, onClose }) => {
               {t('Birthday')}
             </div>
 
-            <div className='text-lg'>
+            <div className='text-lg text-black dark:text-white'>
               <DateTimePicker onChange={onDateChange} value={state.birthday} format="yyyy/MM/dd HH:mm" disableCalendar={true} disableClock={true}/>
             </div>
 
             <select
-              className="w-full cursor-pointer bg-transparent p-2 text-lg dark:text-lg"
+              className="w-full cursor-pointer bg-transparent p-2 text-lg dark:text-lg  text-black dark:text-white"
               value={state.sex}
               onChange={(event) => {
                   dispatch({ field: 'sex', value: event.target.value })
@@ -117,10 +117,10 @@ export const BirthdayDialog: FC<Props> = ({ open, onClose }) => {
                 }
               }
             >
-              <option value="male">{t('Male')}</option>
-              <option value="female">{t('Female')}</option>
+              <option className='dark:text-black' value="male">{t('Male')}</option>
+              <option className='dark:text-black' value="female">{t('Female')}</option>
             </select>
-            <label className='text-lg'>
+            <label className='text-lg text-black dark:text-white'>
               <input
                 type="checkbox"
                 onChange={(event) => onCheckChange(event.target.checked)}
