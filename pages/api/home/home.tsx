@@ -360,7 +360,7 @@ const Home = ({
       }}
     >
       <Head>
-        <title>ChangGPT</title>
+        <title>{process.env.NEXT_PUBLIC_TITLE}</title>
         <meta name="description" content="ChangGPT: Korean LLM by Chang." />
         <meta
           name="viewport"
