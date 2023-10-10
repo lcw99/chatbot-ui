@@ -40,7 +40,7 @@ interface Props {
   stopConversationRef: MutableRefObject<boolean>;
 }
 
-export const appVersion = "0.5.0";
+export const appVersion = "0.6.0";
 
 export const Chat = memo(({ stopConversationRef }: Props) => {
   const { t } = useTranslation('chat');
@@ -114,12 +114,6 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
         };
         const inputText = chatBody.messages.slice(-1)[0]['content'] 
         console.log(inputText);
-        if (saju.saju == "" && inputText.includes('년') && inputText.includes('월') && inputText.includes('일')) {
-          alert(t("Try birthday menu left below."));
-          // homeDispatch({ field: 'loading', value: false });
-          // homeDispatch({ field: 'messageIsStreaming', value: false });
-          // return;
-        }
         const endpoint = getEndpoint(plugin);
         let body;
         if (!plugin) {
@@ -384,18 +378,18 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
 
   return (
     <div className="relative flex-1 overflow-hidden bg-white dark:bg-[#343541]">
-      {!(apiKey || serverSideApiKeyIsSet) ? (
+      {!saju.active ? (
         <div className="mx-auto flex h-full w-[300px] flex-col justify-center space-y-6 sm:w-[600px]">
           <div className="text-center text-4xl font-bold text-black dark:text-white">
-            Welcome to Chatbot UI
+            {process.env.NEXT_PUBLIC_TITLE}
           </div>
           <div className="text-center text-lg text-black dark:text-white">
-            <div className="mb-8">{`Chatbot UI is an open source clone of OpenAI's ChatGPT UI.`}</div>
+            <div className="mb-8" dangerouslySetInnerHTML={{ __html: process.env.NEXT_PUBLIC_NOTICE ?? "" }}></div>
             <div className="mb-2 font-bold">
-              Important: Chatbot UI is 100% unaffiliated with OpenAI.
+              {t('Please set your birthday in the bottom left of the sidebar.')}
             </div>
           </div>
-          <div className="text-center text-gray-500 dark:text-gray-400">
+          {/* <div className="text-center text-gray-500 dark:text-gray-400">
             <div className="mb-2">
               Chatbot UI allows you to plug in your API key to use this UI with
               their API.
@@ -420,7 +414,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
                 openai.com
               </a>
             </div>
-          </div>
+          </div> */}
         </div>
       ) : modelError ? (
         <ErrorMessageDiv error={modelError} />

@@ -50,19 +50,25 @@ export const BirthdayDialog: FC<Props> = ({ open, onClose }) => {
   var sajuCanceled = false;
   const handleSave = async () => {
     // console.log("saju.birthday=" + saju.birthday + ", type=" + typeof(saju.birthday));
-    if (saju.birthday.getFullYear() < 1900 || sajuCanceled) {
+    if (sajuCanceled) {
       saju.saju = "";
       saju.sex = state.sex;
+      saju.active = false;
       saveSaju(saju);
       homeDispatch({ field: 'refresh', value: true }); // just home refresh
       return;
     }
-      
-    const sajuStr = await fetchSaju(state.birthday, new Date(), state.sex);
+    
+    let sajuStr = "";
+    if (state.birthday.getFullYear() >= 1900)
+      sajuStr = await fetchSaju(state.birthday, new Date(), state.sex);
+
+    console.log("******" + sajuStr.substring(0, 100));
 
     saju.birthday = state.birthday;
     saju.saju = sajuStr;
     saju.sex = state.sex;
+    saju.active = true;
     saveSaju(saju);
     homeDispatch({ field: 'refresh', value: true }); // just home refresh
   };
@@ -74,6 +80,8 @@ export const BirthdayDialog: FC<Props> = ({ open, onClose }) => {
 
   const onCheckChange = (value: any) => {
     sajuCanceled = value;
+    saju.active = false;
+    saveSaju(saju);
   };
   
   // Render nothing if the dialog is not open.
@@ -125,7 +133,7 @@ export const BirthdayDialog: FC<Props> = ({ open, onClose }) => {
                 type="checkbox"
                 onChange={(event) => onCheckChange(event.target.checked)}
               />
-              &nbsp; {t('Cancel Saju')}
+              &nbsp; {t('Delete Birthday')}
             </label>
             <button
               type="button"

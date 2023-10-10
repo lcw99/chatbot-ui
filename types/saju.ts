@@ -2,5 +2,6 @@ export interface Saju {
   birthday: Date,
   sex: 'male' | 'female',
   saju: string,
-  today: Date
+  today: Date,
+  active: boolean
 }

@@ -30,5 +30,6 @@
   "Are you sure you want to clear all messages?": "모든 메시지를 지우시겠습니까?",
   "Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.": "0.8과 같은 높은 값은 출력을 더 무작위로 만들고, 0.2와 같은 낮은 값은 더 집중적이고 결정론적으로 만들어줍니다.",
   "Saju": "사주모드",
-  "Try birthday menu left below.": "사주를 보시려면 좌측 하단의 생년월일시 메뉴에서 생시를 입력 하세요."
+  "Try birthday menu left below.": "사주를 보시려면 좌측 하단의 생년월일시 메뉴에서 생시를 입력 하세요.",
+  "Please set your birthday in the bottom left of the sidebar.": "사주를 보시려면 좌측 하단의 생년월일시 메뉴에서 생시를 입력 하세요."
 }
