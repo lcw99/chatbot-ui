@@ -18,7 +18,7 @@ export const fetchSaju = async (birthday: Date, today: Date, sex: string): Promi
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ "birthday": birthdayStr, "today": todayStr, "sex": sex }),
+    body: JSON.stringify({ "birthday": birthdayStr, "today": todayStr, "sex": sex}),
   });
   var sajuStr = "";
   if (response.ok) {
@@ -28,7 +28,7 @@ export const fetchSaju = async (birthday: Date, today: Date, sex: string): Promi
 }
 
 export const getSaju = (): Saju => {
-  let saju: Saju = {birthday: new Date(), sex: "male", saju: "", today: new Date()};
+  let saju: Saju = {birthday: new Date(), sex: "male", saju: "", today: new Date(), active: false};
   const sajuString = localStorage.getItem(STORAGE_KEY_SAJU);
   if (sajuString) {
     try {
