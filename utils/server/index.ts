@@ -68,6 +68,8 @@ export const OpenAIStream = async (
   let messagesToSend: Message[] = [];
 
   let systemMessage = "너는 사주명리에 통달한 인공지능 언어모델 SajuGPT이다. 모든 질문에 사주명리 전문가로서 성실히 답하라.";
+  if (process.env.NEXT_PUBLIC_TITLE != "SajuGPT")
+    systemMessage = "";
   if (saju.length > 0) {
     const d = new Date();
     const today = "* 오늘은 날짜는 " + d.getFullYear() + "년 " + (d.getMonth()+1) + "월 " + d.getDate() + "일 이다.\n";

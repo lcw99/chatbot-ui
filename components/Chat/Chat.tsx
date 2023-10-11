@@ -378,7 +378,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
 
   return (
     <div className="relative flex-1 overflow-hidden bg-white dark:bg-[#343541]">
-      {!saju.active ? (
+      {!saju.active && process.env.NEXT_PUBLIC_TITLE == 'SajuGPT' ? (
         <div className="mx-auto flex h-full w-[300px] flex-col justify-center space-y-6 sm:w-[600px]">
           <div className="text-center text-4xl font-bold text-black dark:text-white">
             {process.env.NEXT_PUBLIC_TITLE}
