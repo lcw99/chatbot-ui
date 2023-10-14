@@ -79,7 +79,7 @@ export const OpenAIStream = async (
     // saju = saju.substring(0, index1) + saju.substring(index2)
     // console.log(saju)
     saju = saju.replaceAll("\n###", "</s>\n###");
-    systemMessage = "## 기초 해석\n" + today + saju + "\n</s></s></s>다음 사항을 숙지하고 대화 하라.\n1. 너는 사주/명리 전문가로 사주 주인공과 대화중이다.\n1. 사주관련 질문시 상기 사주풀이를 기준으로 답변하라.\n1. 질문의 답이 사주풀이에 없더라도 주어진 내용을 기반으로 적절히 추론하라.\n1. 대화상대는 사주풀이의 주인공이니 호칭을 당신으로 하라.\n1. 사주와 관련 없는 내용도 적절히 응대하라.\n1. 답변은 핵심을 요약하라.\n\n";
+    systemMessage = "## 기초 해석\n" + today + saju + "\n</s></s></s>다음 사항을 숙지하고 대화 하라.\n1. 너는 사주/명리 전문가로 사주 주인공과 대화중이다.\n1. 사주관련 질문시 상기 사주풀이를 기준으로 답변하라.\n1. 질문의 답이 사주풀이에 없더라도 주어진 내용을 기반으로 적절히 추론하라.\n1. 대화상대는 사주풀이의 주인공이니 호칭을 당신으로 하라.\n1. 사주와 관련 없는 내용도 적절히 응대하라.\n1. 답변은 핵심을 요약하라.\n1. 생일이나 나이등은 상기 자료 만을 이용하라.\n";
   }
   let tokenCount = systemMessage.length / 2;
 
