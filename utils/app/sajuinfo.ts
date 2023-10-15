@@ -34,6 +34,10 @@ export const getSaju = (): Saju => {
   if (sajuString) {
     try {
       let sajuObj = JSON.parse(sajuString);
+      if (!('uuid' in sajuObj)) {
+        sajuObj['uuid'] = uuidv4()
+        saveSaju(sajuObj)
+      }
       sajuObj.birthday = new Date(Date.parse(sajuObj.birthday));
       sajuObj.today = new Date(Date.parse(sajuObj.today));
       saju = Object.assign(saju, sajuObj);
@@ -41,6 +45,8 @@ export const getSaju = (): Saju => {
       saju.uuid = "anonymous"
       console.error(e);
     }
+  } else {
+    saju.uuid = "anonymous"
   }
 
   return saju;
