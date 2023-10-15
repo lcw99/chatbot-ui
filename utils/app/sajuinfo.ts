@@ -34,10 +34,6 @@ export const getSaju = (): Saju => {
   if (sajuString) {
     try {
       let sajuObj = JSON.parse(sajuString);
-      if (!('uuid' in sajuObj)) {
-        sajuObj['uuid'] = uuidv4()
-        saveSaju(sajuObj)
-      }
       sajuObj.birthday = new Date(Date.parse(sajuObj.birthday));
       sajuObj.today = new Date(Date.parse(sajuObj.today));
       saju = Object.assign(saju, sajuObj);
@@ -54,6 +50,8 @@ export const getSaju = (): Saju => {
 
 export const saveSaju = (saju: Saju) => {
   saju.today = new Date();
+  if (saju.uuid == 'anonymous')
+    saju.uuid = uuidv4()
   console.log("saju----" + saju.birthday);
   console.log(saju);
   localStorage.setItem(STORAGE_KEY_SAJU, JSON.stringify(saju));
