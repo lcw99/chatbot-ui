@@ -29,7 +29,7 @@ export const fetchSaju = async (birthday: Date, today: Date, sex: string): Promi
 }
 
 export const getSaju = (): Saju => {
-  let saju: Saju = {birthday: new Date(), sex: "male", saju: "", today: new Date(), uuid: "anonymous", active: false};
+  let saju: Saju = {birthday: new Date(), sex: "male", saju: "", today: new Date(), uuid: uuidv4(), active: false};
   const sajuString = localStorage.getItem(STORAGE_KEY_SAJU);
   if (sajuString) {
     try {
@@ -38,6 +38,7 @@ export const getSaju = (): Saju => {
       sajuObj.today = new Date(Date.parse(sajuObj.today));
       saju = Object.assign(saju, sajuObj);
     } catch (e) {
+      saju.uuid = "anonymous"
       console.error(e);
     }
   }
