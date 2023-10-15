@@ -100,7 +100,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
         homeDispatch({ field: 'loading', value: true });
         homeDispatch({ field: 'messageIsStreaming', value: true });
         // let uuid1 = uuidv4();
-        let uuid1 = selectedConversation.id;
+        let uuid1 = selectedConversation.id + "|" + saju.uuid;
         console.log("uuid=" + uuid1);
         const chatBody: ChatBody = {
           model: updatedConversation.model,

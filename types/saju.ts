@@ -3,5 +3,6 @@ export interface Saju {
   sex: 'male' | 'female',
   saju: string,
   today: Date,
+  uuid: string,
   active: boolean
 }

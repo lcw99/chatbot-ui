@@ -78,60 +78,35 @@ export const OpenAIStream = async (
     messages = [{role: "user", content: "내 사주는?"}, {role: "assistant", content: sajuSummary}, ...messages];
   }
 
-  const MAX_NUM_MESSAGES = 3;
   messagesToSend = messages;
-  if (messagesToSend.length > MAX_NUM_MESSAGES)
-    messagesToSend.splice(0, messagesToSend.length - MAX_NUM_MESSAGES);
-  // messagesToSend[messagesToSend.length-1].content += "(상기 사주풀이에 근거하여 답하라.)" 
-  let maxNewToken = 700;
-  while(true) {
-    const checkLenRes = await fetchOpenAI(systemMessage, messagesToSend, 700, key, "check_length");
-    if (checkLenRes.status !== 200) {
-      throw new Error(
-        "check_length failed"
-      );
-    }
-    // console.log(checkLenRes)
-    const checkLen = await checkLenRes.json();
-    console.log(checkLen)
-    if (checkLen.message !== "ok")
-      messagesToSend.shift();
-    else {
-      maxNewToken = 3900 - checkLen.code;
-      if (maxNewToken < 0)
-        maxNewToken = 100;
-      break;
-    }
-  }
-  console.log("maxNewToken= " + maxNewToken);
-
-  // let tokenCount = systemMessage.length / 2;
-  // console.log("Start tokenCount= " + tokenCount);
-  // console.log("messages.length= " + messages.length);
-
-  // for (let i = messages.length - 1; i >= 0; i--) {
-  //   const message = messages[i];
-  //   // const token = encoding.encode(message.content)
-  //   // const tokensLen = token.length
-  //   const tokensLen = message.content.length / 2;
-  //   console.log("i=" + i + ", tokensLen=" + tokensLen);
-  //   if (tokenCount + tokensLen + 700 > 3900 || messagesToSend.length > 5) {
-  //     if (messagesToSend.length > 2)
-  //       break;
+  // const MAX_NUM_MESSAGES = 3;
+  // if (messagesToSend.length > MAX_NUM_MESSAGES)
+  //   messagesToSend.splice(0, messagesToSend.length - MAX_NUM_MESSAGES);
+  // let maxNewToken = 700;
+  // while(true) {
+  //   const checkLenRes = await fetchOpenAI(systemMessage, messagesToSend, 700, key, "check_length");
+  //   if (checkLenRes.status !== 200) {
+  //     throw new Error(
+  //       "check_length failed"
+  //     );
   //   }
-  //   tokenCount += tokensLen;
-  //   messagesToSend = [message, ...messagesToSend];
+  //   // console.log(checkLenRes)
+  //   const checkLen = await checkLenRes.json();
+  //   console.log(checkLen)
+  //   if (checkLen.message !== "ok")
+  //     messagesToSend.shift();
+  //   else {
+  //     maxNewToken = 3900 - checkLen.code;
+  //     if (maxNewToken < 0)
+  //       maxNewToken = 100;
+  //     if (maxNewToken > 800)
+  //       maxNewToken = 800;
+  //     break;
+  //   }
   // }
-  // console.log(messagesToSend);
-  // console.log("messagesToSend.length= " + messagesToSend.length);
-  // console.log("tokenCount= " + tokenCount);
-  // // console.log("saju=" + saju);
+  // console.log("maxNewToken= " + maxNewToken);
 
-  // var maxNewToken = 3500 - tokenCount;
-  // if (maxNewToken < 0)
-  //   maxNewToken = 100;
-
-  const res = await fetchOpenAI(systemMessage, messagesToSend, maxNewToken, key, uuid);
+  const res = await fetchOpenAI(systemMessage, messagesToSend, 500, key, uuid);
 
   const encoder = new TextEncoder();
   const decoder = new TextDecoder();

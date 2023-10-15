@@ -1,4 +1,5 @@
 import { Saju } from '@/types/saju';
+import { v4 as uuidv4 } from 'uuid';
 
 const STORAGE_KEY_SAJU = 'saju';
 
@@ -28,7 +29,7 @@ export const fetchSaju = async (birthday: Date, today: Date, sex: string): Promi
 }
 
 export const getSaju = (): Saju => {
-  let saju: Saju = {birthday: new Date(), sex: "male", saju: "", today: new Date(), active: false};
+  let saju: Saju = {birthday: new Date(), sex: "male", saju: "", today: new Date(), uuid: uuidv4(), active: false};
   const sajuString = localStorage.getItem(STORAGE_KEY_SAJU);
   if (sajuString) {
     try {
