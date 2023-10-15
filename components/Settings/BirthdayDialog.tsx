@@ -72,7 +72,11 @@ export const BirthdayDialog: FC<Props> = ({ open, onClose }) => {
       saju.saju = sajuStr;
       saveSaju(saju);
       
-      let message: Message = {role: "user", content: sajuStr + "\n위 내용을 요약하라."};
+      const ss = sajuStr.split("###");
+      ss.splice(1, 3);
+      const sajuStrTemp = ss.join("###"); 
+      // console.log("sajuStrTemp=" + sajuStrTemp);
+      let message: Message = {role: "user", content: sajuStrTemp + "\n위 내용을 요약하라."};
       let messagesToSend: Message[] = [message];
       const res = await fetchOpenAI("", messagesToSend, 200, "", "", false);
       const json = await res.json();
@@ -83,13 +87,13 @@ export const BirthdayDialog: FC<Props> = ({ open, onClose }) => {
       if (summary.length > 500) {
         newSummary = "";
         const ss = summary.split("\n");
-        for (var s of ss) {
-          if ((newSummary + s).length > 700)
-            break;
-          newSummary += s + "\n";
-        }
+        ss.forEach(function (item, index) {
+          if ((newSummary + item).length > 500 || index > 2)
+            return;
+          newSummary += item + "\n";
+        });
       }
-      sajuStr = "\n\n### 사주 요약\n" + newSummary + "\n" + sajuStr;
+      sajuStr = "\n\n### 사주요약\n" + newSummary + "\n" + sajuStr;
     }
 
     console.log("******" + sajuStr.substring(0, 100));

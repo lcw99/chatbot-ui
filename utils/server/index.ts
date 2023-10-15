@@ -66,10 +66,15 @@ export const OpenAIStream = async (
     saju = saju.replace("### 생일(생시)", "### 당신의 생일 정보");
     saju = saju.replace("### 성별\n남자", "### 당신은 남자입니다.");
     saju = saju.replace("### 성별\n여자", "### 당신은 여자입니다.");
-    systemMessage = "##사주풀이##\n" + today + saju + "\n</s></s></s>다음 사항을 숙지하고 대화 하라.\n1. 너는 사주/명리 전문가로 사주 주인공과 대화중이다.\n1. 사주관련 질문시 상기 ##사주풀이##를 기준으로 답변하라.\n1. 질문의 답이 ## 사주풀이에 없더라도 주어진 내용을 기반으로 적절히 추론하라.\n1. 대화상대는 ##사주풀이##의 주인공이니 호칭을 당신으로 하라.\n1. 사주와 관련 없는 내용도 적절히 응대하라.\n1. 답변은 핵심을 요약하라.\n\nB: 내 사주는\nA: 당신의 사주는" + sajuSection[11].replace("대운", "");
+    let sajuSummary = sajuSection[1];
+    if (!sajuSummary.trim().startsWith("사주요약"))
+      sajuSummary = sajuSection[11].replace("대운", "").trim();
+    else 
+      sajuSummary = sajuSummary.replace("사주요약", "").trim();
+    systemMessage = "##사주풀이##\n" + today + saju + "\n</s></s></s>다음 사항을 숙지하고 대화 하라.\n1. 너는 사주/명리 전문가로 사주 주인공과 대화중이다.\n1. 사주관련 질문시 상기 ##사주풀이##를 기준으로 답변하라.\n1. 질문의 답이 ## 사주풀이에 없더라도 주어진 내용을 기반으로 적절히 추론하라.\n1. 대화상대는 ##사주풀이##의 주인공이니 호칭을 당신으로 하라.\n1. 사주와 관련 없는 내용도 적절히 응대하라.\n1. 답변은 핵심을 요약하라.\n";
+    messages = [{role: "user", content: "내 사주는"}, {role: "assistant", content: sajuSummary}, ...messages];
   }
 
-  console.log("key=[" + key + "]");
   messagesToSend = messages;
   let maxNewToken = 700;
   while(true) {
@@ -85,7 +90,7 @@ export const OpenAIStream = async (
     if (checkLen.message !== "ok")
       messagesToSend.shift();
     else {
-      maxNewToken = 3500 - checkLen.code;
+      maxNewToken = 3900 - checkLen.code;
       if (maxNewToken < 0)
         maxNewToken = 100;
       break;
