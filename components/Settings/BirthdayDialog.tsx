@@ -70,30 +70,33 @@ export const BirthdayDialog: FC<Props> = ({ open, onClose }) => {
     if (state.birthday.getFullYear() >= 1900) {
       sajuStr = await fetchSaju(state.birthday, new Date(), state.sex);
       saju.saju = sajuStr;
-      saveSaju(saju);
-      
-      const ss = sajuStr.split("###");
-      ss.splice(1, 3);
-      const sajuStrTemp = ss.join("###"); 
-      // console.log("sajuStrTemp=" + sajuStrTemp);
-      let message: Message = {role: "user", content: sajuStrTemp + "\n위 내용을 요약하라."};
-      let messagesToSend: Message[] = [message];
-      const res = await fetchOpenAI("", messagesToSend, 200, "", "", false);
-      const json = await res.json();
-      let summary = "";
-      if (json['choices'].length > 0)
-        summary = json['choices'][0]['message']['content'];
-      let newSummary = summary;
-      if (summary.length > 500) {
-        newSummary = "";
-        const ss = summary.split("\n");
-        ss.forEach(function (item, index) {
-          if ((newSummary + item).length > 500 || index > 2)
-            return;
-          newSummary += item + "\n";
-        });
+      if (false) {
+        saveSaju(saju);
+        
+        const ss = sajuStr.split("###");
+        ss.splice(3, 1);
+        const sajuStrTemp = ss.join("###"); 
+        console.log("sajuStrTemp=" + sajuStrTemp);
+        let message: Message = {role: "user", content: sajuStrTemp + "\n위 내용을 요약하라."};
+        let messagesToSend: Message[] = [message];
+        const res = await fetchOpenAI("", messagesToSend, 200, "", "", false);
+        const json = await res.json();
+        let summary = "";
+        if (json['choices'].length > 0)
+          summary = json['choices'][0]['message']['content'];
+        let newSummary = summary;
+        if (summary.length > 200) {
+          newSummary = "";
+          const ss = summary.split("\n");
+          ss.forEach(function (item, index) {
+            if ((newSummary + item).length > 400 || index >= 2)
+              return;
+            newSummary += item + "\n";
+            console.log("newSummary=" + index + ":" + newSummary);
+          });
+        }
+        sajuStr = "\n\n### 사주요약\n" + newSummary + "\n" + sajuStr;
       }
-      sajuStr = "\n\n### 사주요약\n" + newSummary + "\n" + sajuStr;
     }
 
     console.log("******" + sajuStr.substring(0, 100));

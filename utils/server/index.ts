@@ -67,15 +67,19 @@ export const OpenAIStream = async (
     saju = saju.replace("### 성별\n남자", "### 당신은 남자입니다.");
     saju = saju.replace("### 성별\n여자", "### 당신은 여자입니다.");
     let sajuSummary = sajuSection[1];
-    if (!sajuSummary.trim().startsWith("사주요약"))
+    let birthday = "";
+    if (!sajuSummary.trim().startsWith("사주요약")) {
       sajuSummary = sajuSection[11].replace("대운", "").trim();
-    else 
+      birthday = sajuSection[1].trim().replace("생일(생시)", "생일 정보:") + sajuSection[2].trim().replace("성별\n", "\n당신의 성별: ");
+      sajuSummary = "당신의 사주는 아래와 같다.\n" + sajuSummary + "\n" + birthday;
+    } else 
       sajuSummary = sajuSummary.replace("사주요약", "").trim();
     systemMessage = "##사주풀이##\n" + today + saju + "\n</s></s></s>다음 사항을 숙지하고 대화 하라.\n1. 너는 사주/명리 전문가로 사주 주인공과 대화중이다.\n1. 사주관련 질문시 상기 ##사주풀이##를 기준으로 답변하라.\n1. 질문의 답이 ## 사주풀이에 없더라도 주어진 내용을 기반으로 적절히 추론하라.\n1. 대화상대는 ##사주풀이##의 주인공이니 호칭을 당신으로 하라.\n1. 사주와 관련 없는 내용도 적절히 응대하라.\n1. 답변은 핵심을 요약하라.\n";
     messages = [{role: "user", content: "내 사주는"}, {role: "assistant", content: sajuSummary}, ...messages];
   }
 
   messagesToSend = messages;
+  // messagesToSend[messagesToSend.length-1].content += "(상기 사주풀이에 근거하여 답하라.)" 
   let maxNewToken = 700;
   while(true) {
     const checkLenRes = await fetchOpenAI(systemMessage, messagesToSend, 700, key, "check_length");
