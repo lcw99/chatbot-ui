@@ -29,7 +29,7 @@ export const fetchSaju = async (birthday: Date, today: Date, sex: string): Promi
 }
 
 export const getSaju = (): Saju => {
-  let saju: Saju = {birthday: new Date(), sex: "male", saju: "", today: new Date(), uuid: uuidv4(), active: false};
+  let saju: Saju = {birthday: new Date(), sex: "male", saju: "", today: new Date(), uuid: "anonymous", active: false};
   const sajuString = localStorage.getItem(STORAGE_KEY_SAJU);
   if (sajuString) {
     try {
