@@ -2,10 +2,6 @@ import { Message } from '@/types/chat';
 import { OpenAIModel } from '@/types/openai';
 import { fetchOpenAI } from '@/pages/api/chat';
 
-// @ts-expect-error
-import wasm from '../../node_modules/@dqbd/tiktoken/lite/tiktoken_bg.wasm?module';
-
-import tiktokenModel from '@dqbd/tiktoken/encoders/cl100k_base.json';
 import { Tiktoken, init } from '@dqbd/tiktoken/lite/init';
 
 import { AZURE_DEPLOYMENT_ID, OPENAI_API_HOST, OPENAI_API_TYPE, OPENAI_API_VERSION, OPENAI_ORGANIZATION } from '../app/const';
@@ -49,13 +45,6 @@ export const OpenAIStream = async (
     console.log("aborted !!!!!!!!!!!!!!!!!!!!!!!!!=" + [...global.aborted.keys()])
     return;
   } 
-
-  await init((imports) => WebAssembly.instantiate(wasm, imports));
-  // const encoding = new Tiktoken(
-  //   tiktokenModel.bpe_ranks,
-  //   tiktokenModel.special_tokens,
-  //   tiktokenModel.pat_str,
-  // );
 
   let messagesToSend: Message[] = [];
 
