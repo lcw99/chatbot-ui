@@ -13,6 +13,9 @@ import 'react-clock/dist/Clock.css';
 import { fetchSaju, getSaju, saveSaju, getDateTimeString } from '@/utils/app/sajuinfo';
 import { Saju } from '@/types/saju';
 
+import { fetchOpenAI } from '@/pages/api/chat';
+import { ChatBody, Message } from '@/types/chat';
+
 interface Props {
   open: boolean;
   onClose: () => void;
@@ -60,15 +63,36 @@ export const BirthdayDialog: FC<Props> = ({ open, onClose }) => {
     }
     
     let sajuStr = "";
-    if (state.birthday.getFullYear() >= 1900)
+
+    saju.birthday = state.birthday;
+    saju.sex = state.sex;
+    saju.active = true;
+    if (state.birthday.getFullYear() >= 1900) {
       sajuStr = await fetchSaju(state.birthday, new Date(), state.sex);
+      saveSaju(saju);
+      
+      let message: Message = {role: "user", content: sajuStr + "\n위 내용을 요약하라."};
+      let messagesToSend: Message[] = [message];
+      const res = await fetchOpenAI("", messagesToSend, 200, "", "", false);
+      const json = await res.json();
+      let summary = "";
+      if (json['choices'].length > 0)
+        summary = json['choices'][0]['message']['content'];
+      let newSummary = summary;
+      if (summary.length > 500) {
+        newSummary = "";
+        const ss = summary.split("\n");
+        for (var s of ss) {
+          if ((newSummary + s).length > 700)
+            break;
+          newSummary += s + "\n";
+        }
+      }
+      sajuStr = "\n\n### 사주 요약\n" + newSummary + "\n" + sajuStr;
+    }
 
     console.log("******" + sajuStr.substring(0, 100));
 
-    saju.birthday = state.birthday;
-    saju.saju = sajuStr;
-    saju.sex = state.sex;
-    saju.active = true;
     saveSaju(saju);
     homeDispatch({ field: 'refresh', value: true }); // just home refresh
   };

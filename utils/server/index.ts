@@ -1,5 +1,6 @@
 import { Message } from '@/types/chat';
 import { OpenAIModel } from '@/types/openai';
+import { fetchOpenAI } from '@/pages/api/chat';
 
 // @ts-expect-error
 import wasm from '../../node_modules/@dqbd/tiktoken/lite/tiktoken_bg.wasm?module';
@@ -31,7 +32,6 @@ export class OpenAIError extends Error {
 
 global.aborted = new Map();
 
-
 export const OpenAIStream = async (
   model: OpenAIModel,
   systemPrompt: string,
@@ -50,20 +50,12 @@ export const OpenAIStream = async (
     return;
   } 
 
-  let url = `${OPENAI_API_HOST}/v1/chat/completions`;
-  if (basaran) {
-    url = `${OPENAI_API_HOST}/v1/completions`;
-  } 
-  if (OPENAI_API_TYPE === 'azure') {
-    url = `${OPENAI_API_HOST}/openai/deployments/${AZURE_DEPLOYMENT_ID}/chat/completions?api-version=${OPENAI_API_VERSION}`;
-  }
-
   await init((imports) => WebAssembly.instantiate(wasm, imports));
-  const encoding = new Tiktoken(
-    tiktokenModel.bpe_ranks,
-    tiktokenModel.special_tokens,
-    tiktokenModel.pat_str,
-  );
+  // const encoding = new Tiktoken(
+  //   tiktokenModel.bpe_ranks,
+  //   tiktokenModel.special_tokens,
+  //   tiktokenModel.pat_str,
+  // );
 
   let messagesToSend: Message[] = [];
 
@@ -78,66 +70,67 @@ export const OpenAIStream = async (
     // const index2 = saju.indexOf("### 육합")
     // saju = saju.substring(0, index1) + saju.substring(index2)
     // console.log(saju)
+    let sajuSection = saju.split("\n###")
+    saju = saju.replaceAll("### 세운", "### 당신의 사주 - 세운");
+    saju = saju.replaceAll("### 대운", "### 당신의 사주 - 대운");
     saju = saju.replaceAll("\n###", "</s>\n###");
-    systemMessage = "## 기초 해석\n" + today + saju + "\n</s></s></s>다음 사항을 숙지하고 대화 하라.\n1. 너는 사주/명리 전문가로 사주 주인공과 대화중이다.\n1. 사주관련 질문시 상기 사주풀이를 기준으로 답변하라.\n1. 질문의 답이 사주풀이에 없더라도 주어진 내용을 기반으로 적절히 추론하라.\n1. 대화상대는 사주풀이의 주인공이니 호칭을 당신으로 하라.\n1. 사주와 관련 없는 내용도 적절히 응대하라.\n1. 답변은 핵심을 요약하라.\n";
+    saju = saju.replace("### 생일(생시)", "### 당신의 생일 정보");
+    saju = saju.replace("### 성별\n남자", "### 당신은 남자입니다.");
+    saju = saju.replace("### 성별\n여자", "### 당신은 여자입니다.");
+    systemMessage = "##사주풀이##\n" + today + saju + "\n</s></s></s>다음 사항을 숙지하고 대화 하라.\n1. 너는 사주/명리 전문가로 사주 주인공과 대화중이다.\n1. 사주관련 질문시 상기 ##사주풀이##를 기준으로 답변하라.\n1. 질문의 답이 ## 사주풀이에 없더라도 주어진 내용을 기반으로 적절히 추론하라.\n1. 대화상대는 ##사주풀이##의 주인공이니 호칭을 당신으로 하라.\n1. 사주와 관련 없는 내용도 적절히 응대하라.\n1. 답변은 핵심을 요약하라.\n\nB: 내 사주는\nA: 당신의 사주는" + sajuSection[11].replace("대운", "");
   }
-  let tokenCount = systemMessage.length / 2;
 
-  for (let i = messages.length - 1; i >= 0; i--) {
-    const message = messages[i];
-    const token = encoding.encode(message.content)
-    // const tokensLen = message.content.length / 2;
-    const tokensLen = token.length
-    console.log("i=" + i + ", tokensLen=" + tokensLen);
-    if (tokenCount + tokensLen + 700 > 3900 || messagesToSend.length > 5) {
-      if (messagesToSend.length > 2)
-        break;
+  console.log("key=[" + key + "]");
+  messagesToSend = messages;
+  let maxNewToken = 700;
+  while(true) {
+    const checkLenRes = await fetchOpenAI(systemMessage, messagesToSend, 700, key, "check_length");
+    if (checkLenRes.status !== 200) {
+      throw new Error(
+        "check_length failed"
+      );
     }
-    tokenCount += tokensLen;
-    messagesToSend = [message, ...messagesToSend];
+    // console.log(checkLenRes)
+    const checkLen = await checkLenRes.json();
+    console.log(checkLen)
+    if (checkLen.message !== "ok")
+      messagesToSend.shift();
+    else {
+      maxNewToken = 3500 - checkLen.code;
+      if (maxNewToken < 0)
+        maxNewToken = 100;
+      break;
+    }
   }
-  console.log(messagesToSend);
-  console.log("messagesToSend.length= " + messagesToSend.length);
-  console.log("tokenCount= " + tokenCount);
-  // console.log("saju=" + saju);
+  console.log("maxNewToken= " + maxNewToken);
 
-  var maxNewToken = 3500 - tokenCount;
-  if (maxNewToken < 0)
-    maxNewToken = 100;
-  const res = await fetch(url, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...(OPENAI_API_TYPE === 'openai' && {
-        Authorization: `Bearer ${key ? key : process.env.OPENAI_API_KEY}`
-      }),
-      ...(OPENAI_API_TYPE === 'azure' && {
-        'api-key': `${key ? key : process.env.OPENAI_API_KEY}`
-      }),
-      ...((OPENAI_API_TYPE === 'openai' && OPENAI_ORGANIZATION) && {
-        'OpenAI-Organization': OPENAI_ORGANIZATION,
-      }),
-    },
-    method: 'POST',
-    body: JSON.stringify({
-      // ...(OPENAI_API_TYPE === 'openai' && {model: 'polyglot-ko-12.8b-chang-instruct-chat'}),
-      ...(OPENAI_API_TYPE === 'openai' && {model: process.env.DEFAULT_MODEL}),
-      ...(true && { 
-        messages: [
-          {
-            role: 'system',
-            content: systemMessage,
-          },
-          ...messagesToSend,
-        ],
-        max_tokens: maxNewToken,
-        temperature: 0.7,
-        top_p: 1.0,
-        stop: ["\nA:", "\nB:"],
-        stream: true,
-        user: uuid,
-      }),
-    }),
-  });
+  // let tokenCount = systemMessage.length / 2;
+  // console.log("Start tokenCount= " + tokenCount);
+  // console.log("messages.length= " + messages.length);
+
+  // for (let i = messages.length - 1; i >= 0; i--) {
+  //   const message = messages[i];
+  //   // const token = encoding.encode(message.content)
+  //   // const tokensLen = token.length
+  //   const tokensLen = message.content.length / 2;
+  //   console.log("i=" + i + ", tokensLen=" + tokensLen);
+  //   if (tokenCount + tokensLen + 700 > 3900 || messagesToSend.length > 5) {
+  //     if (messagesToSend.length > 2)
+  //       break;
+  //   }
+  //   tokenCount += tokensLen;
+  //   messagesToSend = [message, ...messagesToSend];
+  // }
+  // console.log(messagesToSend);
+  // console.log("messagesToSend.length= " + messagesToSend.length);
+  // console.log("tokenCount= " + tokenCount);
+  // // console.log("saju=" + saju);
+
+  // var maxNewToken = 3500 - tokenCount;
+  // if (maxNewToken < 0)
+  //   maxNewToken = 100;
+
+  const res = await fetchOpenAI(systemMessage, messagesToSend, maxNewToken, key, uuid);
 
   const encoder = new TextEncoder();
   const decoder = new TextDecoder();
