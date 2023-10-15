@@ -74,11 +74,14 @@ export const OpenAIStream = async (
       sajuSummary = "" + sajuSummary + "\n" + birthday;
     } else 
       sajuSummary = sajuSummary.replace("사주요약", "").trim();
-    systemMessage = "##사주풀이##\n" + today + saju + "\n</s></s></s>대화시 다음 조건을 따른다.\n1. 너는 사주/명리 전문가로 사주 주인공과 대화중이다.\n1. 사주관련 질문시 상기 ##사주풀이##를 기준으로 답변하라.\n1. 질문의 답이 ## 사주풀이에 없더라도 주어진 내용을 기반으로 적절히 추론하라.\n1. 대화상대는 ##사주풀이##의 주인공이니 호칭을 당신으로 하라.\n1. 사주와 관련 없는 내용도 적절히 응대하라.\n1. 답변은 핵심을 요약하라.\n";
+    systemMessage = "##사주풀이##\n" + today + saju + "\n</s></s></s>대화시 다음 조건을 따른다.\n1. 너는 사주/명리 전문가로 사주 주인공과 대화중이다.\n1. 사주관련 질문시 상기 ##사주풀이##를 기준으로 답변하라.\n1. 질문의 답이 ##사주풀이##에 없더라도 주어진 내용을 기반으로 적절히 추론하라.\n1. 대화상대는 ##사주풀이##의 주인공이니 호칭을 당신으로 하라.\n1. 사주와 관련 없는 내용도 적절히 응대하라.\n1. 답변은 핵심을 요약하라.\n";
     messages = [{role: "user", content: "내 사주는?"}, {role: "assistant", content: sajuSummary}, ...messages];
   }
 
+  const MAX_NUM_MESSAGES = 3;
   messagesToSend = messages;
+  if (messagesToSend.length > MAX_NUM_MESSAGES)
+    messagesToSend.splice(0, messagesToSend.length - MAX_NUM_MESSAGES);
   // messagesToSend[messagesToSend.length-1].content += "(상기 사주풀이에 근거하여 답하라.)" 
   let maxNewToken = 700;
   while(true) {
