@@ -69,6 +69,7 @@ export const BirthdayDialog: FC<Props> = ({ open, onClose }) => {
     saju.active = true;
     if (state.birthday.getFullYear() >= 1900) {
       sajuStr = await fetchSaju(state.birthday, new Date(), state.sex);
+      saju.saju = sajuStr;
       saveSaju(saju);
       
       let message: Message = {role: "user", content: sajuStr + "\n위 내용을 요약하라."};
@@ -93,6 +94,7 @@ export const BirthdayDialog: FC<Props> = ({ open, onClose }) => {
 
     console.log("******" + sajuStr.substring(0, 100));
 
+    saju.saju = sajuStr;
     saveSaju(saju);
     homeDispatch({ field: 'refresh', value: true }); // just home refresh
   };
