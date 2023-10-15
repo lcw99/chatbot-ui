@@ -59,7 +59,15 @@ export const OpenAIStream = async (
     // const index2 = saju.indexOf("### 육합")
     // saju = saju.substring(0, index1) + saju.substring(index2)
     // console.log(saju)
-    let sajuSection = saju.split("\n###")
+    let sajuSection = saju.split("\n###");
+    let daewoonIndex = 0;
+    sajuSection.forEach(function(item, index) {
+      if (item.trim().startsWith('대운\n')) {
+        daewoonIndex = index;
+        return;
+      }
+    });
+
     saju = saju.replaceAll("### 세운", "### 당신의 사주 - 세운");
     saju = saju.replaceAll("### 대운", "### 당신의 사주 - 대운");
     saju = saju.replaceAll("\n###", "</s>\n###");
@@ -69,7 +77,7 @@ export const OpenAIStream = async (
     let sajuSummary = sajuSection[1];
     let birthday = "";
     if (!sajuSummary.trim().startsWith("사주요약")) {
-      sajuSummary = sajuSection[11].replace("대운", "").trim();
+      sajuSummary = sajuSection[daewoonIndex].replace("대운", "").trim();
       birthday = sajuSection[1].trim().replace("생일(생시)", "생일 정보:") + sajuSection[2].trim().replace("성별\n", "\n당신의 성별: ");
       sajuSummary = "" + sajuSummary + "\n" + birthday;
     } else 
