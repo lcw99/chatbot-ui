@@ -160,7 +160,7 @@ const stream = new ReadableStream({
             const json = JSON.parse(data);
             const text = json.choices[0].delta.content;
             // console.log(json);
-            if (typeof text !== 'undefined') {
+            if (typeof text !== 'undefined' && text != null) {
               const queue = encoder.encode(text);
               controller.enqueue(queue);
             }
