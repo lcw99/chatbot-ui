@@ -361,11 +361,18 @@ const Home = ({
     >
       <Head>
         <title>{process.env.NEXT_PUBLIC_TITLE}</title>
-        <meta name="description" content="ChangGPT: Korean LLM by Chang." />
         <meta
           name="viewport"
           content="height=device-height ,width=device-width, initial-scale=1, user-scalable=no"
         />
+        <meta name="title" content="사주GPT - AI ChatBot" />
+        <meta name="description" content="빅데이터 기반 인공지능 AI 사주팔자 결합 모델"/>
+        <meta name="keywords" content="사주GPT,SajuGPT,AI운세,AI사주,AI,인공지능,챗봇,CHATGPT,사주,사주팔자,궁합,운세,명리학,연애상담,연애고민,스타지오소프트" />
+        <meta property="og:title" content="사주GPT AI ChatBot " />
+        <meta property="og:description" content="『빅데이터 기반 인공지능 AI 사주팔자 결합 모델』"/>
+        <meta name="google-site-verification" content="3SWnJJgRFYf6kzcqCgdRITnxfN6UpgiKuEZ5l8VPUoc" />
+        <meta name="naver-site-verification" content="41ab0b14790ed50e956b4b23cfde1a08ab235c6f" />
+
         <link rel="icon" href="/favicon.ico" />
       </Head>
       {selectedConversation && (
