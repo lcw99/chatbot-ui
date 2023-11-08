@@ -50,8 +50,9 @@ export const OpenAIStream = async (
 
   let systemMessage = "너는 사주명리에 통달한 인공지능 언어모델 SajuGPT이다. 모든 질문에 사주명리 전문가로서 성실히 답하라.";
   if (process.env.NEXT_PUBLIC_TITLE != "SajuGPT")
-    systemMessage = "";
-  if (saju.length > 0) {
+    systemMessage = "너는 세상 모든 지식에 통달한 지식 전문가 ChangGPT이다. 모든 질문에 전문적이고 상세한 답변을 하세요.";
+  if (process.env.NEXT_PUBLIC_TITLE == "SajuGPT" && saju.length > 0) {
+    // saju = saju.substring(0, 3000);
     const d = new Date();
     const today = "* 오늘은 날짜는 " + d.getFullYear() + "년 " + (d.getMonth()+1) + "월 " + d.getDate() + "일 이다.\n";
 
@@ -70,7 +71,7 @@ export const OpenAIStream = async (
 
     // saju = saju.replaceAll("### 세운", "### 당신의 사주 - 세운");
     // saju = saju.replaceAll("### 대운", "### 당신의 사주 - 대운");
-    saju = saju.replaceAll("\n###", "</s>\n###");
+    // saju = saju.replaceAll("\n###", "</s>\n###");
     // saju = saju.replace("### 생일(생시)", "### 당신의 생일 정보");
     // saju = saju.replace("### 성별\n남자", "### 당신은 남자입니다.");
     // saju = saju.replace("### 성별\n여자", "### 당신은 여자입니다.");
@@ -82,11 +83,16 @@ export const OpenAIStream = async (
     //   sajuSummary = "" + sajuSummary + "\n" + birthday;
     // } else 
     //   sajuSummary = sajuSummary.replace("사주요약", "").trim();
-    systemMessage = "B: 다음 제시된 지문과 지시문을 잘 보고 대화에 임하라.\n\n##사주풀이##\n" + today + saju + "\n</s></s></s>대화시 다음 조건을 따른다.\n1. 이전의 다른 사람 사주는 모두 잊어라.\n1. 너는 사주/명리 전문가로 사주 주인공과 대화중이다.\n1. 사주관련 질문시 상기 ##사주풀이##를 기준으로 답변하라.\n1. 질문의 답이 ##사주풀이##에 없더라도 주어진 내용을 기반으로 적절히 추론하라.\n1. 대화상대는 ##사주풀이##의 주인공이니 호칭을 당신으로 하라.\n1. 사주와 관련 없는 내용도 적절히 응대하라.\n1. 답변은 핵심을 요약하라.\n";
+    systemMessage = "B: 너는 사주명리에 통달한 인공지능 언어모델 SajuGPT이다. 모든 질문에 사주명리 전문가로서 성실히 답하라.\n\n##대화상대 사주##\n" + today + saju + "\n</s></s></s>대화시 다음 조건을 따른다.\n" 
+    + "1. 대화상대는 사주의 주인공이다. 호칭을 당신으로 하라.\n"
+    + "1. 위 지문의 내용을 최우선으로 참고하여 답변하라"
+    ;
     // messages = [{role: "user", content: "내 사주는?"}, {role: "assistant", content: sajuSummary}, ...messages];
   }
 
   messagesToSend = messages;
+  let last = messagesToSend.length - 1;
+  // messagesToSend[last]['content'] = messagesToSend[last]['content'] + "(내 운명이 걸린 일이니 친절한 답변 부탁해요)";
   // const MAX_NUM_MESSAGES = 3;
   // if (messagesToSend.length > MAX_NUM_MESSAGES)
   //   messagesToSend.splice(0, messagesToSend.length - MAX_NUM_MESSAGES);
@@ -114,7 +120,7 @@ export const OpenAIStream = async (
   // }
   // console.log("maxNewToken= " + maxNewToken);
 
-  const res = await fetchOpenAI(systemMessage, messagesToSend, 500, key, uuid);
+  const res = await fetchOpenAI(systemMessage, messagesToSend, 700, key, uuid);
 
   const encoder = new TextEncoder();
   const decoder = new TextDecoder();

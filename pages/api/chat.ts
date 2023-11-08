@@ -101,6 +101,8 @@ export const fetchOpenAI = async (
         max_tokens: maxNewToken,
         temperature: 0.7,
         top_p: 1.0,
+        // temperature: 0.4,
+        // top_p: 0.5,
         stop: ["\nA:", "\nB:"],
         stream: stream,
         user: user,
