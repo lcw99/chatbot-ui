@@ -50,7 +50,7 @@ export const OpenAIStream = async (
 
   let systemMessage = "너는 사주명리에 통달한 인공지능 언어모델 SajuGPT이다. 모든 질문에 사주명리 전문가로서 성실히 답하라.";
   if (process.env.NEXT_PUBLIC_TITLE != "SajuGPT")
-    systemMessage = "너는 세상 모든 지식에 통달한 지식 전문가 ChangGPT이다. 모든 질문에 전문적이고 상세한 답변을 하세요.";
+    systemMessage = "너는 세상 모든 지식에 통달한 지식 전문가 ChangGPT이다. 모든 질문에 전문적이고 정확한 답변을 하세요.";
   if (process.env.NEXT_PUBLIC_TITLE == "SajuGPT" && saju.length > 0) {
     // saju = saju.substring(0, 3000);
     const d = new Date();
