@@ -79,7 +79,7 @@ export const BirthdayDialog: FC<Props> = ({ open, onClose }) => {
         console.log("sajuStrTemp=" + sajuStrTemp);
         let message: Message = {role: "user", content: sajuStrTemp + "\n위 내용을 요약하라."};
         let messagesToSend: Message[] = [message];
-        const res = await fetchOpenAI("", messagesToSend, 200, "", "", false);
+        const res = await fetchOpenAI("", messagesToSend, 200, "", "", false, null);
         const json = await res.json();
         let summary = "";
         if (json['choices'].length > 0)

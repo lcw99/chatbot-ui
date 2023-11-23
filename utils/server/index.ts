@@ -1,9 +1,9 @@
 import { Message } from '@/types/chat';
 import { OpenAIModel } from '@/types/openai';
 import { fetchOpenAI } from '@/pages/api/chat';
+import { Status } from '@/types/status';
 
 import { Tiktoken, init } from '@dqbd/tiktoken/lite/init';
-
 import { AZURE_DEPLOYMENT_ID, OPENAI_API_HOST, OPENAI_API_TYPE, OPENAI_API_VERSION, OPENAI_ORGANIZATION } from '../app/const';
 
 import {
@@ -26,7 +26,8 @@ export class OpenAIError extends Error {
   }
 }
 
-global.aborted = new Map();
+let status: Status = {aborted: false};
+const STATUS = "ABORT_STATUS";
 
 export const OpenAIStream = async (
   model: OpenAIModel,
@@ -40,9 +41,14 @@ export const OpenAIStream = async (
 ) => {
   // console.log("OpenAIStream uuid = " + systemPrompt + "," + uuid);
   let basaran = false;
+  const controller = new AbortController();
+  let stream = null;
+
   if (systemPrompt.startsWith("abort")) {
-    global.aborted.set(uuid, true); 
-    console.log("aborted !!!!!!!!!!!!!!!!!!!!!!!!!=" + [...global.aborted.keys()])
+    status.aborted = true; 
+    stream!.cancel();
+    controller.abort();
+    console.log("aborted !!!!!!!!!!!!!!!!!!!!!!!!!=")
     return;
   } 
 
@@ -83,11 +89,11 @@ export const OpenAIStream = async (
     //   sajuSummary = "" + sajuSummary + "\n" + birthday;
     // } else 
     //   sajuSummary = sajuSummary.replace("사주요약", "").trim();
-    systemMessage = "B: 너는 사주명리에 통달한 인공지능 언어모델 SajuGPT이다. 모든 질문에 사주명리 전문가로서 성실히 답하라.\n\n##대화상대 사주##\n" + today + saju + "\n</s></s></s>대화시 다음 조건을 따른다.\n" 
-    + "1. 대화상대는 사주의 주인공이다. 호칭을 당신으로 하라.\n"
-    + "1. 위 지문의 내용을 최우선으로 참고하여 답변하라"
+    systemMessage = "" + 
+    saju + 
+    today + 
+    "\n위 사주를 기반으로 아래 질문에 답하시오. 질문자 호칭은 '당신'을 사용하세요."
     ;
-    // messages = [{role: "user", content: "내 사주는?"}, {role: "assistant", content: sajuSummary}, ...messages];
   }
 
   messagesToSend = messages;
@@ -120,13 +126,13 @@ export const OpenAIStream = async (
   // }
   // console.log("maxNewToken= " + maxNewToken);
 
-  const res = await fetchOpenAI(systemMessage, messagesToSend, 700, key, uuid);
+  const res = await fetchOpenAI(systemMessage, messagesToSend, 700, key, uuid, true, controller.signal);
 
   const encoder = new TextEncoder();
   const decoder = new TextDecoder();
 
-  if (res.status !== 200) {
-    const result = await res.json();
+  if (res!.status !== 200) {
+    const result = await res!.json();
     if (result.error) {
       throw new OpenAIError(
         result.error.message,
@@ -144,7 +150,7 @@ export const OpenAIStream = async (
   }
 
 let stopped = false;
-const stream = new ReadableStream({
+stream = new ReadableStream({
     cancel(reason) {
         console.log("canceled=" + reason);
         stopped = true;
@@ -153,9 +159,9 @@ const stream = new ReadableStream({
       async start(controller) {
 
         const onParse = (event: ParsedEvent | ReconnectInterval) => {
-        if (global.aborted.has(uuid)) {
+        if (status.aborted) {
           controller.close();
-          console.log("stopped = global.aborted.has(uuid)");
+          console.log("stopped = status.aborted");
           stopped = true;
           return;
         }
@@ -182,12 +188,17 @@ const stream = new ReadableStream({
 
       const parser = createParser(onParse);
       let i = 0;
-      for await (const chunk of res.body as any) {
+      for await (const chunk of res!.body as any) {
         i += 1;
-        if (stopped || global.aborted.has(uuid)) {
-          console.log("stopped or aborted = " + stopped + ", " + [...global.aborted.keys()])
+        // if (i == 10) {
+        //   console.log("test break");
+        //   controller.close();
+        //   break;
+        // }
+        if (stopped || status.aborted) {
+          console.log("stopped or aborted =" + status.aborted)
           stopped = false;
-          global.aborted.delete(uuid);
+          status.aborted = false;
           controller.close();
           break;
         }
@@ -196,6 +207,5 @@ const stream = new ReadableStream({
       }
     },
   });
-
   return stream;
 };

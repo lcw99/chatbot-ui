@@ -66,6 +66,7 @@ export const fetchOpenAI = async (
   key: string,
   user: string,
   stream: boolean = true,
+  abort: any,
 ) => {
   let url = `${OPENAI_API_HOST}/v1/chat/completions`;
   if (OPENAI_API_TYPE === 'azure') {
@@ -73,41 +74,47 @@ export const fetchOpenAI = async (
   }
 
   console.log("url=" + url);
-  const res = await fetch(url, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...(OPENAI_API_TYPE === 'openai' && {
-        Authorization: `Bearer ${key ? key : process.env.OPENAI_API_KEY}`
+  try {
+    const res = await fetch(url, {
+      signal: abort,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(OPENAI_API_TYPE === 'openai' && {
+          Authorization: `Bearer ${key ? key : process.env.OPENAI_API_KEY}`
+        }),
+        ...(OPENAI_API_TYPE === 'azure' && {
+          'api-key': `${key ? key : process.env.OPENAI_API_KEY}`
+        }),
+        ...((OPENAI_API_TYPE === 'openai' && OPENAI_ORGANIZATION) && {
+          'OpenAI-Organization': OPENAI_ORGANIZATION,
+        }),
+      },
+      method: 'POST',
+      body: JSON.stringify({
+        // ...(OPENAI_API_TYPE === 'openai' && {model: 'polyglot-ko-12.8b-chang-instruct-chat'}),
+        ...(OPENAI_API_TYPE === 'openai' && {model: OPENAI_MODEL}),
+        ...(true && { 
+          messages: [
+            {
+              role: 'system',
+              content: systemMessage,
+            },
+            ...messagesToSend,
+          ],
+          max_tokens: maxNewToken,
+          temperature: 0.7,
+          top_p: 1.0,
+          // temperature: 0.4,
+          // top_p: 0.5,
+          stop: ["\nA:", "\nB:"],
+          stream: stream,
+          user: user,
+        }),
       }),
-      ...(OPENAI_API_TYPE === 'azure' && {
-        'api-key': `${key ? key : process.env.OPENAI_API_KEY}`
-      }),
-      ...((OPENAI_API_TYPE === 'openai' && OPENAI_ORGANIZATION) && {
-        'OpenAI-Organization': OPENAI_ORGANIZATION,
-      }),
-    },
-    method: 'POST',
-    body: JSON.stringify({
-      // ...(OPENAI_API_TYPE === 'openai' && {model: 'polyglot-ko-12.8b-chang-instruct-chat'}),
-      ...(OPENAI_API_TYPE === 'openai' && {model: OPENAI_MODEL}),
-      ...(true && { 
-        messages: [
-          {
-            role: 'system',
-            content: systemMessage,
-          },
-          ...messagesToSend,
-        ],
-        max_tokens: maxNewToken,
-        temperature: 0.7,
-        top_p: 1.0,
-        // temperature: 0.4,
-        // top_p: 0.5,
-        stop: ["\nA:", "\nB:"],
-        stream: stream,
-        user: user,
-      }),
-    }),
-  });
-  return res;
+    });
+    return res;
+  } catch(e) {
+    console.log(e);
+    return null;
+  }
 }
